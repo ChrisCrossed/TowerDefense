@@ -1,11 +1,16 @@
+using System.Net;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class c_ScriptTest : MonoBehaviour
 {
+    public GameObject StartPositionObject;
+    public GameObject EndPositionObject;
+
     NavMeshAgent agent;
     private Vector3[] positions;
     bool flip;
+    NavMeshPath path;
 
     private void Awake()
     {
@@ -18,30 +23,40 @@ public class c_ScriptTest : MonoBehaviour
     {
         positions = new Vector3[2];
 
-        positions[0] = GameObject.Find("GridBlock").transform.Find("NavMesh Link").transform.position;
-        positions[1] = GameObject.Find("GridBlock (1)").transform.Find("NavMesh Link").transform.position;
+        // positions[0] = StartPositionObject.transform.Find("NavMeshLink_North").transform.position;
+        // positions[1] = EndPositionObject.transform.Find("NavMeshLink_North").transform.position;
+        positions[0] = new Vector3(1.25f, 0.25f, 1.25f);
+        positions[1] = new Vector3(6f, 0.25f, -1.25f);
+
+        path = new NavMeshPath();
+        
+
+        print("Path Test: " + path.status);
+
+        //agent.SetDestination(positions[0]);
     }
 
-    float timer = 0f;
+    int endPoint = 0;
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime;
-
-        if (timer > 1.5f)
+       if(agent.remainingDistance < 0.1f)
         {
-            timer = 0f;
+            endPoint += 1;
+            endPoint %= positions.Length;
 
-            flip = !flip;
+            //agent.SetDestination(positions[endPoint]);
+        }
 
-            if (flip)
-            {
-                agent.SetDestination(positions[0]);
-            }
-            else
-            {
-                agent.SetDestination(positions[1]);
-            }
+       if(Input.GetKeyDown(KeyCode.L))
+        {
+            agent.CalculatePath(positions[1], path);
+            print("Path Test: " + path.status);
+        }
+
+       if(agent.remainingDistance == Mathf.Infinity)
+        {
+            print("PATH BROKEN");
         }
     }
 }
