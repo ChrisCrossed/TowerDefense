@@ -4,10 +4,15 @@ using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class c_NavMeshTest : MonoBehaviour
 {
+    public bool TogglesState;
+    public bool StartCarved;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        carveState = !StartCarved;
+
+        SetState();
     }
 
     float timer;
@@ -15,21 +20,30 @@ public class c_NavMeshTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(TogglesState)
         {
-            carveState = !carveState;
-
-            gameObject.GetComponent<NavMeshObstacle>().carving = carveState;
-
-            if(carveState)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                gameObject.GetComponent<NavMeshObstacle>().size = Vector3.one;
+                SetState();
             }
-            else
-            {
-                gameObject.GetComponent<NavMeshObstacle>().size = Vector3.zero;
-            }
+        }
+    }
+
+    void SetState()
+    {
+        carveState = !carveState;
+
+        gameObject.GetComponent<NavMeshObstacle>().carving = carveState;
+
+        if (carveState)
+        {
+            gameObject.GetComponent<NavMeshObstacle>().size = Vector3.one;
+            gameObject.GetComponent<Renderer>().enabled = true;
+        }
+        else
+        {
+            gameObject.GetComponent<NavMeshObstacle>().size = Vector3.zero;
+            gameObject.GetComponent<Renderer>().enabled = false;
         }
     }
 }

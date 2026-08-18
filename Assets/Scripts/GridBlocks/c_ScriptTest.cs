@@ -25,38 +25,57 @@ public class c_ScriptTest : MonoBehaviour
 
         // positions[0] = StartPositionObject.transform.Find("NavMeshLink_North").transform.position;
         // positions[1] = EndPositionObject.transform.Find("NavMeshLink_North").transform.position;
-        positions[0] = new Vector3(1.25f, 0.25f, 1.25f);
-        positions[1] = new Vector3(6f, 0.25f, -1.25f);
+        positions[0] = new Vector3(-3.75f, 0.5f, 3.755f);
+        positions[1] = new Vector3(11.5f, 0.5f, -3.75f);
 
         path = new NavMeshPath();
         
 
         print("Path Test: " + path.status);
 
-        //agent.SetDestination(positions[0]);
+        agent.SetDestination(positions[endPoint]);
+
+        CheckForPath();
     }
 
-    int endPoint = 0;
+    int endPoint = 1;
     // Update is called once per frame
     void Update()
     {
-       if(agent.remainingDistance < 0.1f)
+        if(agent.remainingDistance < 0.1f)
         {
             endPoint += 1;
             endPoint %= positions.Length;
 
-            //agent.SetDestination(positions[endPoint]);
+            agent.SetDestination(positions[endPoint]);
+
+            CheckForPath();
         }
 
-       if(Input.GetKeyDown(KeyCode.L))
+        // Test for when I press Space to change the state of the turret boxes and their blocking
+        if(Input.GetKeyDown(KeyCode.L))
         {
-            agent.CalculatePath(positions[1], path);
-            print("Path Test: " + path.status);
+            CheckForPath();
         }
+    }
 
-       if(agent.remainingDistance == Mathf.Infinity)
+    void CheckForPath()
+    {
+        agent.CalculatePath(positions[endPoint], path);
+
+        if (path.status == NavMeshPathStatus.PathComplete)
         {
-            print("PATH BROKEN");
+            print("Path Successful");
+            // agent.path = path;
+            agent.SetPath(path);
+            agent.speed = 3.5f;
+
+            agent.SetDestination(positions[endPoint]);
+        }
+        else
+        {
+            print("*** NO PATH ***");
+            agent.speed = 0f;
         }
     }
 }
