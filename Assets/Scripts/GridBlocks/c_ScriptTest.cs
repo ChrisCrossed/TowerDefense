@@ -1,11 +1,16 @@
+using NUnit.Framework;
+using System.IO;
 using System.Net;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class c_ScriptTest : MonoBehaviour
 {
     public GameObject StartPositionObject;
     public GameObject EndPositionObject;
+
+    public bool DebugThis;
 
     NavMeshAgent agent;
     private Vector3[] positions;
@@ -71,11 +76,98 @@ public class c_ScriptTest : MonoBehaviour
             agent.speed = 3.5f;
 
             agent.SetDestination(positions[endPoint]);
+
+            if(DebugThis)
+            {
+                CreatePathList();
+
+                /*
+                
+                */
+            }
         }
         else
         {
             print("*** NO PATH ***");
             agent.speed = 0f;
         }
+    }
+
+    
+    void CreatePathList()
+    {
+        GameObject[] spheres = new GameObject[20];
+        for (int x = 0; x < 20; x++)
+        {
+            spheres[x] = GameObject.Find("Sphere (" + x + ")").gameObject;
+        }
+
+        int numStops = 0;
+        agent.CalculatePath(positions[endPoint], path);
+
+        Vector3 newPos = path.corners[1];
+        newPos = GetNewPosition(newPos);
+
+        // newPos.z = newPos.z + (2.5f / 2f);
+        // newPos.z = Mathf.Floor(newPos.z / 2.5f) * 2.5f;
+
+        spheres[0].transform.position = newPos;
+
+        /*
+
+        PathList = path.corners;
+
+        for (int i = 0; i < PathList.Length; i++)
+        {
+            if(i != 0)
+            {
+                float dist = Vector3.Distance(PathList[i], PathList[i - 1]);
+
+                if (dist < (2.5f / 2f))
+                {
+                    Vector3[] newList = new Vector3[PathList.Length - 1];
+                    for(int j = 0; j < i; j++)
+                    {
+                        newList[j] = PathList[i];
+                    }
+
+                    PathList = newList;
+
+                    foreach (Vector3 pos in PathList)
+                    {
+                        print(pos);
+
+                        for (int x = 0; x < PathList.Length; x++)
+                        {
+                            spheres[x] = GameObject.Find("Sphere (" + x + ")").gameObject;
+                            spheres[x].transform.position = PathList[x];
+                        }
+                    }
+                }
+
+                
+            }
+        }*/
+    }
+
+    Vector3 GetNewPosition(Vector3 pos)
+    {
+        Vector3 temp = pos;
+
+        temp.x = GetNewPosition(temp.x);
+        temp.z = GetNewPosition(temp.z);
+
+        return temp;
+    }
+    
+    float GetNewPosition(float pos)
+    {
+        float val = (2.5f / 2f);
+
+        pos = pos + val;
+        int temp = (int)(pos / val);
+        pos = temp * val;
+
+        return pos;
     }
 }
