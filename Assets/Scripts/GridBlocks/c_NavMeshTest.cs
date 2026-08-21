@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class c_NavMeshTest : MonoBehaviour
 {

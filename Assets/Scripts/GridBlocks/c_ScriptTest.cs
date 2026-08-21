@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.UI.GridLayoutGroup;
@@ -93,25 +94,47 @@ public class c_ScriptTest : MonoBehaviour
         }
     }
 
-    
+    List<Vector3> NavigationPositions;
     void CreatePathList()
     {
+        NavigationPositions = new List<Vector3>();
+
         GameObject[] spheres = new GameObject[20];
         for (int x = 0; x < 20; x++)
         {
             spheres[x] = GameObject.Find("Sphere (" + x + ")").gameObject;
         }
 
-        int numStops = 0;
         agent.CalculatePath(positions[endPoint], path);
 
-        Vector3 newPos = path.corners[1];
-        newPos = GetNewPosition(newPos);
+        foreach(Vector3 pos in path.corners)
+        {
+            Vector3 newPos = pos;
+            newPos = GetNewPosition(newPos);
 
-        // newPos.z = newPos.z + (2.5f / 2f);
-        // newPos.z = Mathf.Floor(newPos.z / 2.5f) * 2.5f;
+            NavigationPositions.Add(newPos);
+        }
 
-        spheres[0].transform.position = newPos;
+        if(NavigationPositions.Count > 0)
+        {
+            for (int i = 1; i < NavigationPositions.Count; i++)
+            {
+                float dist = Vector3.Distance(NavigationPositions[i - 1], NavigationPositions[i]);
+
+                if (dist < 2.5f)
+                {
+                    NavigationPositions.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+        
+        for(int j = 0; j < NavigationPositions.Count; j++)
+        {
+            spheres[j].transform.position = NavigationPositions[j];
+        }
+
+        // spheres[0].transform.position = newPos;
 
         /*
 
