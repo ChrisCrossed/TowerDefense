@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.UI.GridLayoutGroup;
+using System.Collections;
 
 public class c_ScriptTest : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class c_ScriptTest : MonoBehaviour
         path = new NavMeshPath();
         
 
-        print("Path Test: " + path.status);
+        // print("Path Test: " + path.status);
 
         agent.SetDestination(positions[endPoint]);
 
@@ -67,6 +68,9 @@ public class c_ScriptTest : MonoBehaviour
 
     void CheckForPath()
     {
+        if (!DebugThis) return;
+
+        print("Ran Check for Path");
         agent.CalculatePath(positions[endPoint], path);
 
         if (path.status == NavMeshPathStatus.PathComplete)
@@ -89,14 +93,16 @@ public class c_ScriptTest : MonoBehaviour
         }
         else
         {
-            print("*** NO PATH ***");
+            // print("*** NO PATH ***");
             agent.speed = 0f;
         }
     }
 
     List<Vector3> NavigationPositions;
+    float RaycastDist = 0.5f;
     void CreatePathList()
     {
+        print("Started CreatePathList()");
         NavigationPositions = new List<Vector3>();
 
         GameObject[] spheres = new GameObject[20];
@@ -107,70 +113,50 @@ public class c_ScriptTest : MonoBehaviour
 
         agent.CalculatePath(positions[endPoint], path);
 
+        int layerMask = LayerMask.NameToLayer(UserLayers.GridBlock.ToString());
         foreach(Vector3 pos in path.corners)
         {
+            print("Running Raycast");
+            RaycastHit hit;
+
             Vector3 newPos = pos;
-            newPos = GetNewPosition(newPos);
+            newPos.y += RaycastDist;
 
-            NavigationPositions.Add(newPos);
-        }
+            Debug.DrawRay(newPos, Vector3.down * (RaycastDist + 0.5f), Color.red, 1.0f);
 
-        if(NavigationPositions.Count > 0)
-        {
-            for (int i = 1; i < NavigationPositions.Count; i++)
+            if(Physics.Raycast(newPos, Vector3.down, out hit, RaycastDist + 0.5f, layerMask))
             {
-                float dist = Vector3.Distance(NavigationPositions[i - 1], NavigationPositions[i]);
-
-                if (dist < 2.5f)
-                {
-                    NavigationPositions.RemoveAt(i);
-                    i--;
-                }
+                print("FOUND: " + hit.collider.name);
+                NavigationPositions.Add(hit.collider.transform.Find("NavPoint").transform.position);
             }
         }
         
-        for(int j = 0; j < NavigationPositions.Count; j++)
+        for (int j = 0; j < NavigationPositions.Count; j++)
         {
             spheres[j].transform.position = NavigationPositions[j];
         }
 
-        // spheres[0].transform.position = newPos;
+        StartCoroutine(PathingThread());
+    }
 
-        /*
+    IEnumerator PathingThread()
+    {
+        print("Num Positions: " + NavigationPositions.Count);
 
-        PathList = path.corners;
-
-        for (int i = 0; i < PathList.Length; i++)
+        for(int i = 0; i < NavigationPositions.Count; i++)
         {
-            if(i != 0)
-            {
-                float dist = Vector3.Distance(PathList[i], PathList[i - 1]);
+            
+            agent.SetDestination(NavigationPositions[i]);
 
-                if (dist < (2.5f / 2f))
-                {
-                    Vector3[] newList = new Vector3[PathList.Length - 1];
-                    for(int j = 0; j < i; j++)
-                    {
-                        newList[j] = PathList[i];
-                    }
+            float dist = Vector2.Distance(new Vector2(gameObject.transform.position.x, gameObject.transform.position.z), new Vector2(NavigationPositions[i].x, NavigationPositions[i].z));
+            print(dist);
 
-                    PathList = newList;
+            while(dist > 0.05f)
+                yield return new WaitForSeconds(1f / 30f);
 
-                    foreach (Vector3 pos in PathList)
-                    {
-                        print(pos);
+        }
 
-                        for (int x = 0; x < PathList.Length; x++)
-                        {
-                            spheres[x] = GameObject.Find("Sphere (" + x + ")").gameObject;
-                            spheres[x].transform.position = PathList[x];
-                        }
-                    }
-                }
-
-                
-            }
-        }*/
+        yield return null;
     }
 
     Vector3 GetNewPosition(Vector3 pos)

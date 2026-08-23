@@ -6,3 +6,9 @@ public enum Directions
     West = 2,
     South = 3
 }
+
+public enum UserLayers
+{
+    Enemy = 0,
+    GridBlock = 1
+}
