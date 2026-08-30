@@ -42,6 +42,10 @@ public class c_ScriptTest : MonoBehaviour
 
         agent.SetDestination(positions[endPoint]);
 
+        print("Turn Speed: " + agent.angularSpeed);
+        agent.acceleration = 30f; // Default 8f
+        agent.angularSpeed = 360f * 5f; // Default 120f degrees per second
+
         CheckForPath();
     }
 
@@ -59,8 +63,10 @@ public class c_ScriptTest : MonoBehaviour
             CheckForPath();
         }
 
+        SetForwardAngle();
+
         // Test for when I press Space to change the state of the turret boxes and their blocking
-        if(Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.L))
         {
             CheckForPath();
         }
@@ -84,7 +90,7 @@ public class c_ScriptTest : MonoBehaviour
 
             if(DebugThis)
             {
-                CreatePathList();
+                // CreatePathList();
 
                 /*
                 
@@ -96,6 +102,17 @@ public class c_ScriptTest : MonoBehaviour
             // print("*** NO PATH ***");
             agent.speed = 0f;
         }
+    }
+
+    void SetForwardAngle()
+    {
+        Vector3 forwardPos = gameObject.transform.position + gameObject.transform.forward;
+        Vector3 nextPos = agent.steeringTarget;
+        nextPos.y = gameObject.transform.position.y;
+
+        Vector3 lookAtPos = Vector3.Lerp(forwardPos, nextPos, 0.98f * Time.deltaTime);
+
+        gameObject.transform.LookAt(lookAtPos);
     }
 
     List<Vector3> NavigationPositions;
