@@ -10,7 +10,7 @@ public class c_NavMeshTest : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        carveState = !StartCarved;
+        carveState = StartCarved;
 
         SetState();
     }
