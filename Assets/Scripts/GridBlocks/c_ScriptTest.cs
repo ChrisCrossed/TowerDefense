@@ -33,7 +33,7 @@ public class c_ScriptTest : MonoBehaviour
         // positions[0] = StartPositionObject.transform.Find("NavMeshLink_North").transform.position;
         // positions[1] = EndPositionObject.transform.Find("NavMeshLink_North").transform.position;
         positions[0] = new Vector3(-3.75f, 0.5f, 3.755f);
-        positions[1] = new Vector3(11.5f, 0.5f, -3.75f);
+        positions[1] = EndPositionObject.transform.position;
 
         path = new NavMeshPath();
         
@@ -99,7 +99,7 @@ public class c_ScriptTest : MonoBehaviour
         }
         else
         {
-            // print("*** NO PATH ***");
+            print("*** NO PATH ***");
             agent.speed = 0f;
         }
     }
