@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.UI.GridLayoutGroup;
 using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 
 public class c_ScriptTest : MonoBehaviour
 {
@@ -53,6 +55,7 @@ public class c_ScriptTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         if(agent.remainingDistance < 0.1f)
         {
             endPoint += 1;
@@ -62,6 +65,7 @@ public class c_ScriptTest : MonoBehaviour
 
             CheckForPath();
         }
+        */
 
         SetForwardAngle();
 
@@ -77,7 +81,8 @@ public class c_ScriptTest : MonoBehaviour
         if (!DebugThis) return;
 
         print("Ran Check for Path");
-        agent.CalculatePath(positions[endPoint], path);
+        // agent.CalculatePath(positions[endPoint], path);
+        agent.CalculatePath(EndPositionObject.transform.position, path);
 
         if (path.status == NavMeshPathStatus.PathComplete)
         {
@@ -86,9 +91,14 @@ public class c_ScriptTest : MonoBehaviour
             agent.SetPath(path);
             agent.speed = 3.5f;
 
-            agent.SetDestination(positions[endPoint]);
+            // agent.SetDestination(positions[endPoint]);
 
-            if(DebugThis)
+            NavigationPositions = new List<Vector3>();
+
+            NavigationPositions.Add(EndPositionObject.transform.position);
+            StartCoroutine(PathingThread());
+
+            if (DebugThis)
             {
                 // CreatePathList();
 
@@ -156,24 +166,66 @@ public class c_ScriptTest : MonoBehaviour
         StartCoroutine(PathingThread());
     }
 
+    bool HasNewTempGoalPos;
     IEnumerator PathingThread()
     {
         print("Num Positions: " + NavigationPositions.Count);
 
         for(int i = 0; i < NavigationPositions.Count; i++)
         {
-            
             agent.SetDestination(NavigationPositions[i]);
 
-            float dist = Vector2.Distance(new Vector2(gameObject.transform.position.x, gameObject.transform.position.z), new Vector2(NavigationPositions[i].x, NavigationPositions[i].z));
-            print(dist);
+            float dist = Vector3.Distance(gameObject.transform.position, NavigationPositions[i]);
+            
+            while(dist > 1 || HasNewTempGoalPos)
+            {
+                dist = Vector3.Distance(gameObject.transform.position, NavigationPositions[i]);
 
-            while(dist > 0.05f)
+                // print(dist);
                 yield return new WaitForSeconds(1f / 30f);
+            }
 
+            HasNewTempGoalPos = false;
+            print("Reached Goal");
+
+            if (NavigationPositions.Count > 0)
+            {
+                NavigationPositions.RemoveAt(i);
+                print("Removed");
+            }
+
+            if(NavigationPositions.Count == 0)
+            {
+                agent.isStopped = true;
+            }
         }
 
         yield return null;
+    }
+
+    public void GiveTempNavGoalPosition(Vector3 tempWorldPos)
+    {
+        print("Adding New Position at front of path list");
+
+        List<Vector3> tempNavPositions = new List<Vector3>();
+
+        // Determine if world position is valid
+
+        // Determine if world position is available on agent path
+
+        // If clear, push to the front of the NavigationPositions list
+        if(NavigationPositions == new List<Vector3>())
+            NavigationPositions = new List<Vector3>();
+
+        tempNavPositions.Add(tempWorldPos);
+
+        foreach (Vector3 navPos in NavigationPositions)
+            tempNavPositions.Add(navPos);
+
+        NavigationPositions.Clear();
+        NavigationPositions = tempNavPositions;
+
+        HasNewTempGoalPos = true;
     }
 
     Vector3 GetNewPosition(Vector3 pos)
