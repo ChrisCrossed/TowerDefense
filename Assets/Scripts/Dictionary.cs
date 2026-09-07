@@ -12,3 +12,10 @@ public enum UserLayers
     Enemy = 0,
     GridBlock = 1
 }
+
+public enum LevelObjectTypes
+{
+    PowerCoreStructure,
+    PowerCore,
+    EnemySpawnPoint
+}

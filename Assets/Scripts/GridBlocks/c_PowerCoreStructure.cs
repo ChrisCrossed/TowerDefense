@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class c_PowerCoreStructure : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
+        GameObject LevelLogicObj = GameObject.Find("LevelLogic");
+        c_LevelLogic LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
         
+        LevelLogic.RegisterLevelObject(LevelObjectTypes.PowerCoreStructure, gameObject);
     }
 
     // Update is called once per frame
