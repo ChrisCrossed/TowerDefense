@@ -19,3 +19,10 @@ public enum LevelObjectTypes
     PowerCore,
     EnemySpawnPoint
 }
+
+public enum PowerCoreRank
+{
+    Primary = 0,
+    Secondary = 1,
+    Tertiary = 2
+}

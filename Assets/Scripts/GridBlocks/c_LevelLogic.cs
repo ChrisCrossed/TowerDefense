@@ -50,9 +50,9 @@ public class c_LevelLogic : MonoBehaviour
 
     
 
-    public List<GameObject> GetPowerCoreStructures()
+    public IReadOnlyList<GameObject> GetPowerCoreStructures()
     {
-        return PowerCoreStructures;
+        return PowerCoreStructures as IReadOnlyList<GameObject>;
     }
 
     public void BeginRound(int _round = 0)

@@ -52,16 +52,16 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         float currBestDistance = Mathf.Infinity;
 
-        GameObject PrimaryPowerCoreStructure = null;
+        GameObject PowerCoreStructure = null;
 
-        for(int i = 0; i < AllPowerCoreStructures.Count; i++)
+        for (int i = 0; i < AllPowerCoreStructures.Count; i++)
         {
             print("Number of Power Core Structures: " + AllPowerCoreStructures.Count);
 
             Vector3 powerCoreStructPos = AllPowerCoreStructures[i].transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position;
 
             NavAgent.CalculatePath(powerCoreStructPos, _path);
-            
+
             // If NavMeshPathStatus == PathComplete, then we know there's a valid path to that Power Core structure.
             print("Path to " + AllPowerCoreStructures[i].gameObject.name + ": " + _path.status);
 
@@ -82,27 +82,27 @@ public class c_EnemyStartPointLogic : MonoBehaviour
             if (dist < currBestDistance)
             {
                 currBestDistance = dist;
-                PrimaryPowerCoreStructure = AllPowerCoreStructures[i];
+                PowerCoreStructure = AllPowerCoreStructures[i];
             }
             #endregion Determine best PowerCoreStructure
         }
 
-        if (PrimaryPowerCoreStructure == null)
+        if (PowerCoreStructure == null)
         {
             print(" NO VALID POWER CORE STRUCTURES FOR " + gameObject.name);
             return;
         }
 
-        ValidPowerCoreStructures.Add(PrimaryPowerCoreStructure);
+        for(int i = 0; i < AllPowerCoreStructures.Count; i++)
+        {
+            c_PowerCoreStructure powerCoreStructure = AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>();
 
-        AllPowerCoreStructures.Remove(PrimaryPowerCoreStructure);
-
-        foreach(GameObject remainingPowerCoreStructure in AllPowerCoreStructures)
-            ValidPowerCoreStructures.Add(remainingPowerCoreStructure);
+            powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
+        }
 
         // Test output
-        foreach (GameObject testPowerCoreStruct in ValidPowerCoreStructures)
-            print("Core Structures in order: " + testPowerCoreStruct.name);
+        foreach (GameObject testPowerCoreStruct in AllPowerCoreStructures)
+            print("Core Structures in order: " + testPowerCoreStruct.name + " is: " + testPowerCoreStruct.GetComponent<c_PowerCoreStructure>().GetPowerCoreRank());
 
     }
 
