@@ -33,7 +33,11 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         #region Level Logic Connections
         levelLogic = GameObject.Find("LevelLogic").gameObject;
         AllPowerCoreStructures = new List<GameObject>();
-        AllPowerCoreStructures = levelLogic.GetComponent<c_LevelLogic>().GetPowerCoreStructures();
+
+        foreach(GameObject powerCoreObj in levelLogic.GetComponent<c_LevelLogic>().GetPowerCoreStructures())
+        {
+            AllPowerCoreStructures.Add(powerCoreObj);
+        }
         #endregion Level Logic Connections
 
         INIT_GetPowerCoreConnections();
@@ -41,6 +45,9 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
     void INIT_GetPowerCoreConnections()
     {
+        print("<color=red>---</color>");
+        print("Running test for: " + gameObject.name);
+
         NavMeshPath _path = new NavMeshPath();
 
         float currBestDistance = Mathf.Infinity;
@@ -49,10 +56,12 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         for(int i = 0; i < AllPowerCoreStructures.Count; i++)
         {
+            print("Number of Power Core Structures: " + AllPowerCoreStructures.Count);
+
             Vector3 powerCoreStructPos = AllPowerCoreStructures[i].transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position;
 
             NavAgent.CalculatePath(powerCoreStructPos, _path);
-
+            
             // If NavMeshPathStatus == PathComplete, then we know there's a valid path to that Power Core structure.
             print("Path to " + AllPowerCoreStructures[i].gameObject.name + ": " + _path.status);
 
