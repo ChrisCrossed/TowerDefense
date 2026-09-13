@@ -1,6 +1,7 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 
 public class c_EnemyStartPointLogic : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class c_EnemyStartPointLogic : MonoBehaviour
     #endregion NavMesh Data
 
     #region PowerCoreStructures
-    List<GameObject> ValidPowerCoreStructures;
     #endregion PowerCoreStructures
 
     #region Level Logic Connections
@@ -25,10 +25,6 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         NavMeshChildObject = transform.Find("NavMeshAgentObj").gameObject;
         NavAgent = NavMeshChildObject.GetComponent<NavMeshAgent>();
         #endregion NavMesh Data
-
-        #region PowerCoreStructures
-        ValidPowerCoreStructures = new List<GameObject>();
-        #endregion PowerCoreStructures
 
         #region Level Logic Connections
         levelLogic = GameObject.Find("LevelLogic").gameObject;
@@ -50,20 +46,20 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         NavMeshPath _path = new NavMeshPath();
 
-        float currBestDistance = Mathf.Infinity;
+        // get all power cores
+        List<float> powerCoreDistances = new List<float>();
 
-        GameObject PowerCoreStructure = null;
-
+        // Cycle through and remove invalid ones that aren't connected
         for (int i = 0; i < AllPowerCoreStructures.Count; i++)
         {
-            print("Number of Power Core Structures: " + AllPowerCoreStructures.Count);
+            // print("Number of Power Core Structures: " + AllPowerCoreStructures.Count);
 
             Vector3 powerCoreStructPos = AllPowerCoreStructures[i].transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position;
 
             NavAgent.CalculatePath(powerCoreStructPos, _path);
 
             // If NavMeshPathStatus == PathComplete, then we know there's a valid path to that Power Core structure.
-            print("Path to " + AllPowerCoreStructures[i].gameObject.name + ": " + _path.status);
+            // print("Path to " + AllPowerCoreStructures[i].gameObject.name + ": " + _path.status);
 
             if (_path.status != NavMeshPathStatus.PathComplete)
             {
@@ -72,6 +68,14 @@ public class c_EnemyStartPointLogic : MonoBehaviour
                 continue;
             }
 
+            if (AllPowerCoreStructures.Count == 0)
+            {
+                print(" NO VALID POWER CORE STRUCTURES FOR " + gameObject.name);
+                return;
+            }
+
+            /// Need to determine method to check for second/third best if they exist
+
             #region Determine best PowerCoreStructure
             // I can use this distance to determine the closest PowerCoreStructure. If they're the same distance, just accept the first.
             float dist = 0f;
@@ -79,31 +83,64 @@ public class c_EnemyStartPointLogic : MonoBehaviour
             for (int j = 0; j < _path.corners.Length - 1; j++)
                 dist += Vector3.Distance(_path.corners[j], _path.corners[j + 1]);
 
-            if (dist < currBestDistance)
-            {
-                currBestDistance = dist;
-                PowerCoreStructure = AllPowerCoreStructures[i];
-            }
+            powerCoreDistances.Add(dist);
+
+            // print("<color=red> --------- </color> Distance to " + AllPowerCoreStructures[i].gameObject.name + ": " + powerCoreDistances[i]);
             #endregion Determine best PowerCoreStructure
         }
 
-        if (PowerCoreStructure == null)
+        List<GameObject> tempPowerCoreList = new List<GameObject>();
+        List<float> tempPowerCoreDistList = new List<float>();
+
+
+        while(AllPowerCoreStructures.Count > 0)
         {
-            print(" NO VALID POWER CORE STRUCTURES FOR " + gameObject.name);
-            return;
+            int currShortest = AllPowerCoreStructures.Count - 1;
+
+            // Sort by distance
+            for (int i = 0; i < AllPowerCoreStructures.Count; i++)
+            {
+                if (powerCoreDistances[i] < powerCoreDistances[currShortest])
+                {
+                    currShortest = i;
+                }
+            }
+
+            tempPowerCoreList.Add(AllPowerCoreStructures[currShortest]);
+            tempPowerCoreDistList.Add(powerCoreDistances[currShortest]);
+
+            AllPowerCoreStructures.RemoveAt(currShortest);
+            powerCoreDistances.RemoveAt(currShortest);
         }
 
-        for(int i = 0; i < AllPowerCoreStructures.Count; i++)
+        AllPowerCoreStructures.Clear();
+        powerCoreDistances.Clear();
+
+        foreach(GameObject tempPowerCore in tempPowerCoreList)
+        {
+            AllPowerCoreStructures.Add(tempPowerCore);
+            powerCoreDistances.Add(tempPowerCoreDistList[0]);
+            tempPowerCoreDistList.RemoveAt(0);
+        }
+
+        print("<color=red>" + gameObject.name + " found " + AllPowerCoreStructures.Count + " valid Power Cores.</color>");
+        for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+        {
+            print("<color=red>" + AllPowerCoreStructures[i].name + " has a dist of " + powerCoreDistances[i] + "</color>");
+        }
+
+        // Assign Core Rank by distance
+        for (int i = 0; i < AllPowerCoreStructures.Count; i++)
         {
             c_PowerCoreStructure powerCoreStructure = AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>();
 
             powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
         }
 
-        // Test output
-        foreach (GameObject testPowerCoreStruct in AllPowerCoreStructures)
-            print("Core Structures in order: " + testPowerCoreStruct.name + " is: " + testPowerCoreStruct.GetComponent<c_PowerCoreStructure>().GetPowerCoreRank());
-
+        for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+        {
+            print("<color=red>" + AllPowerCoreStructures[i].name + " has a Rank of " + AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>().GetPowerCoreRank() + "</color>");
+        }
     }
 
     /// <summary>

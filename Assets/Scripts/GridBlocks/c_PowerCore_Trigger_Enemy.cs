@@ -6,12 +6,12 @@ public class c_PowerCore_Trigger_Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        print("Enter: " + other.gameObject.name);
+        // print("Enter: " + other.gameObject.name);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("Collision: " + collision.gameObject.name);
+        // print("Collision: " + collision.gameObject.name);
         if(IsPassthroughTest)
         {
             if (collision.gameObject.CompareTag(UserLayers.Enemy.ToString()))
