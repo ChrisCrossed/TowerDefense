@@ -134,7 +134,14 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         {
             c_PowerCoreStructure powerCoreStructure = AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>();
 
-            powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
+            if(AllPowerCoreStructures.Count == 1)
+            {
+                powerCoreStructure.SetPowerCoreRank(PowerCoreRank.SoloCore);
+            }
+            else
+            {
+                powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
+            }
         }
 
         for (int i = 0; i < AllPowerCoreStructures.Count; ++i)

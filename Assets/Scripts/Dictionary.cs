@@ -22,6 +22,7 @@ public enum LevelObjectTypes
 
 public enum PowerCoreRank
 {
+    SoloCore = -1,
     Primary = 0,
     Secondary = 1,
     Tertiary = 2
