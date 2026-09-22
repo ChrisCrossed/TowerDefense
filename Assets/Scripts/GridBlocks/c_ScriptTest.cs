@@ -1,13 +1,7 @@
-using NUnit.Framework;
-using System.IO;
-using System.Net;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.UI.GridLayoutGroup;
 using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 
 public class c_ScriptTest : MonoBehaviour
 {
@@ -18,7 +12,6 @@ public class c_ScriptTest : MonoBehaviour
 
     NavMeshAgent agent;
     private Vector3[] positions;
-    bool flip;
     NavMeshPath path;
 
     private void Awake()
@@ -49,6 +42,17 @@ public class c_ScriptTest : MonoBehaviour
         agent.angularSpeed = 360f * 5f; // Default 120f degrees per second
 
         CheckForPath();
+
+        SpawnEnemy(PowerCoreRank.Primary, transform);
+    }
+
+
+    public void SpawnEnemy(PowerCoreRank targetPowerCoreGoal, Transform _transform)
+    {
+        PowerCoreGoal = targetPowerCoreGoal;
+
+        gameObject.transform.position = _transform.position;
+        gameObject.transform.rotation = _transform.rotation;
     }
 
     int endPoint = 1;
@@ -227,6 +231,8 @@ public class c_ScriptTest : MonoBehaviour
 
         HasNewTempGoalPos = true;
     }
+
+    public PowerCoreRank PowerCoreGoal { private set; get; }
 
     Vector3 GetNewPosition(Vector3 pos)
     {
