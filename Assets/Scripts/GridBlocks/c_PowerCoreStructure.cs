@@ -1,4 +1,7 @@
+using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.AI;
+using System.Collections.Generic;
 
 
 
@@ -15,10 +18,12 @@ public class c_PowerCoreStructure : MonoBehaviour
     bool navpoint_South_Valid = true;
     Vector3[] navpoint_South_Position = new Vector3[2];
 
+    GameObject LevelLogicObj;
+    c_LevelLogic LevelLogic;
     void Awake()
     {
-        GameObject LevelLogicObj = GameObject.Find("LevelLogic");
-        c_LevelLogic LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
+        LevelLogicObj = GameObject.Find("LevelLogic");
+        LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
         
         LevelLogic.RegisterLevelObject(LevelObjectTypes.PowerCoreStructure, gameObject);
 
@@ -58,6 +63,8 @@ public class c_PowerCoreStructure : MonoBehaviour
         {
             // Disable the navpoint_SouthEast obj
             navpoint_North_Valid = false;
+
+            navPoints.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>().enabled = false;
         }
 
         // Check if East direction has a valid block
@@ -71,6 +78,8 @@ public class c_PowerCoreStructure : MonoBehaviour
         {
             // Disable the navpoint_SouthEast obj
             navpoint_East_Valid = false;
+
+            navPoints.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().enabled = false;
         }
 
         // Check if West direction has a valid block
@@ -84,6 +93,8 @@ public class c_PowerCoreStructure : MonoBehaviour
         {
             // Disable the navpoint_SouthEast obj
             navpoint_West_Valid = false;
+
+            navPoints.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().enabled = false;
         }
 
         // Check if South direction has a valid block
@@ -97,12 +108,37 @@ public class c_PowerCoreStructure : MonoBehaviour
         {
             // Disable the navpoint_SouthEast obj
             navpoint_South_Valid = false;
+
+            navPoints.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().enabled = false;
+        }
+
+        GameObject SpawnerObject;
+        // Get a valid NavMeshAgent for a reference point.
+        // Navigate to each EnemySpawner until you have PathComplete solution.
+        // Snag it and move on.
+
+        foreach(GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
+        {
+
         }
 
         // Now go through all valid positions and navigate toward other valid checkpoints
         // (such as the Enemy Spawner or other Power Cores)
         // If this power core is the Primary, then determine which direction goes toward the Spawner
         // If this power core is the Secondary or Tertiary, determine what are connected.
+
+        if (powerCoreRank == PowerCoreRank.SoloCore) return;
+
+        // I need to get the positions to test for the other PowerCores/Spawner.
+        // if this is the Primary, I need to also consider if the Spawner is connected.
+        // if this is the Secondary, I need to consider for Tertiary AND Primary.
+        // If this is the Tertiary, I need to consider for the Primary AND Secondary.
+        List<Vector3> ConnectedDestinationList = new List<Vector3>();
+
+        if(navpoint_North_Valid)
+        {
+            
+        }
     }
 
     // Update is called once per frame

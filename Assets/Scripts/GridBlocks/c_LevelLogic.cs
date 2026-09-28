@@ -55,6 +55,11 @@ public class c_LevelLogic : MonoBehaviour
         return PowerCoreStructures as IReadOnlyList<GameObject>;
     }
 
+    public IReadOnlyList<GameObject> GetEnemySpawnerObjects()
+    {
+        return EnemySpawnObjects as IReadOnlyList<GameObject>;
+    }
+
     public void BeginRound(int _round = 0)
     {
         // If round is 0, apply an even number of cores unless otherwise stated

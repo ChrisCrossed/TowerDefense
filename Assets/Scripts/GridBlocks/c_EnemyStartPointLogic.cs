@@ -28,8 +28,12 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         #region Level Logic Connections
         levelLogic = GameObject.Find("LevelLogic").gameObject;
-        AllPowerCoreStructures = new List<GameObject>();
 
+        // Register self for evaluation
+        levelLogic.GetComponent<c_LevelLogic>().RegisterLevelObject(LevelObjectTypes.EnemySpawnPoint, gameObject);
+
+        // Get all PowerCoreStructures for evaluation
+        AllPowerCoreStructures = new List<GameObject>();
         foreach(GameObject powerCoreObj in levelLogic.GetComponent<c_LevelLogic>().GetPowerCoreStructures())
         {
             AllPowerCoreStructures.Add(powerCoreObj);
@@ -52,14 +56,9 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         // Cycle through and remove invalid ones that aren't connected
         for (int i = 0; i < AllPowerCoreStructures.Count; i++)
         {
-            // print("Number of Power Core Structures: " + AllPowerCoreStructures.Count);
-
             Vector3 powerCoreStructPos = AllPowerCoreStructures[i].transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position;
 
             NavAgent.CalculatePath(powerCoreStructPos, _path);
-
-            // If NavMeshPathStatus == PathComplete, then we know there's a valid path to that Power Core structure.
-            // print("Path to " + AllPowerCoreStructures[i].gameObject.name + ": " + _path.status);
 
             if (_path.status != NavMeshPathStatus.PathComplete)
             {
@@ -121,12 +120,24 @@ public class c_EnemyStartPointLogic : MonoBehaviour
             AllPowerCoreStructures.Add(tempPowerCore);
             powerCoreDistances.Add(tempPowerCoreDistList[0]);
             tempPowerCoreDistList.RemoveAt(0);
+
+            // Adds the PowerCore to the list of destinations for PowerCore NavAgent evaluation
+            EnemyDestinationList.Add(tempPowerCore);
         }
 
+        // DEBUG TEXT
+        /*
         print("<color=red>" + gameObject.name + " found " + AllPowerCoreStructures.Count + " valid Power Cores.</color>");
         for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
         {
             print("<color=red>" + AllPowerCoreStructures[i].name + " has a dist of " + powerCoreDistances[i] + "</color>");
+        }
+        */
+
+        if(AllPowerCoreStructures.Count == 1)
+        {
+            AllPowerCoreStructures[0].GetComponent<c_PowerCoreStructure>().SetPowerCoreRank(PowerCoreRank.SoloCore);
+            return;
         }
 
         // Assign Core Rank by distance
@@ -134,20 +145,24 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         {
             c_PowerCoreStructure powerCoreStructure = AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>();
 
-            if(AllPowerCoreStructures.Count == 1)
-            {
-                powerCoreStructure.SetPowerCoreRank(PowerCoreRank.SoloCore);
-            }
-            else
-            {
-                powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
-            }
+            powerCoreStructure.SetPowerCoreRank((PowerCoreRank)i);
         }
 
+        // DEBUG TEXT
+        /*
         for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
         {
             print("<color=red>" + AllPowerCoreStructures[i].name + " has a Rank of " + AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>().GetPowerCoreRank() + "</color>");
         }
+        */
+    }
+
+    List<GameObject> EnemyDestinationList;
+    public List<GameObject> GetEnemyDestinationList()
+    {
+        List<GameObject> tempDestList = new List<GameObject>();
+
+        return tempDestList;
     }
 
     /// <summary>

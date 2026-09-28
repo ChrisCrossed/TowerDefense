@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be14c8f861e1a947a577b9f38000922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  IsPassthroughTest: 0
 --- !u!54 &475916104599630294
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -204,6 +205,7 @@ GameObject:
   - component: {fileID: 8842364461324889562}
   - component: {fileID: 5889716093036200353}
   - component: {fileID: 2932359338357251513}
+  - component: {fileID: 4236751310290738055}
   m_Layer: 0
   m_Name: navpoint_Outer_South
   m_TagString: Untagged
@@ -283,6 +285,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!195 &4236751310290738055
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2289995669251966399}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 0
+  m_Acceleration: 0
+  avoidancePriority: 50
+  m_AngularSpeed: 0
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.0000002
+  m_BaseOffset: 0.5000001
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &3601426062249037163
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,6 +830,7 @@ GameObject:
   - component: {fileID: 5984780166680986324}
   - component: {fileID: 5470515412860962707}
   - component: {fileID: 1396912550727475274}
+  - component: {fileID: 980320798959411498}
   m_Layer: 0
   m_Name: navpoint_Outer_North
   m_TagString: Untagged
@@ -885,6 +910,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!195 &980320798959411498
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6771280671264402405}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 0
+  m_Acceleration: 0
+  avoidancePriority: 50
+  m_AngularSpeed: 0
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.0000002
+  m_BaseOffset: 0.5000001
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &7548162943458494699
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,6 +943,7 @@ GameObject:
   - component: {fileID: 4276637092957042975}
   - component: {fileID: 7884710185587099765}
   - component: {fileID: 9127464086989579441}
+  - component: {fileID: 3335959362469850844}
   m_Layer: 0
   m_Name: navpoint_Outer_West
   m_TagString: Untagged
@@ -975,6 +1023,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!195 &3335959362469850844
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7548162943458494699}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 0
+  m_Acceleration: 0
+  avoidancePriority: 50
+  m_AngularSpeed: 0
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.0000002
+  m_BaseOffset: 0.5000001
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &7930053355743178627
 GameObject:
   m_ObjectHideFlags: 0
@@ -1025,6 +1095,7 @@ GameObject:
   - component: {fileID: 2963017558824480674}
   - component: {fileID: 5008893333485567740}
   - component: {fileID: 827910635794316772}
+  - component: {fileID: 2353066935074383628}
   m_Layer: 0
   m_Name: navpoint_Outer_East
   m_TagString: Untagged
@@ -1104,3 +1175,25 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!195 &2353066935074383628
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586779928703594393}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 0
+  m_Acceleration: 0
+  avoidancePriority: 50
+  m_AngularSpeed: 0
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.0000002
+  m_BaseOffset: 0.5000001
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
