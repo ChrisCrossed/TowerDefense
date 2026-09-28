@@ -42,9 +42,13 @@ public class c_PowerCoreStructure : MonoBehaviour
     }
 
     // Distance in any cardinal direction from center to any neighbor block
-    
+
+    // Checks from a valid navpoint to various destinations in other functions
+    GameObject ValidNavPointObject;
     void DetermineValidWrapPoints()
     {
+        ValidNavPointObject = null;
+
         // Determine if West side has valid entrance
         float blockDist = 3.75f;
         float vertCheckDist = 2.0f;
@@ -59,6 +63,8 @@ public class c_PowerCoreStructure : MonoBehaviour
             print("<color=red>HIT</color>");
             navpoint_North_Position[0] = navPoints.Find("navpoint_Outer_North").transform.position;
             navpoint_North_Position[1] = navPoints.Find("navpoint_SouthWest").transform.position;
+
+            ValidNavPointObject = navPoints.Find("navpoint_Outer_North").gameObject;
         }
         else
         {
@@ -74,6 +80,9 @@ public class c_PowerCoreStructure : MonoBehaviour
             print("<color=red>HIT</color>");
             navpoint_East_Position[0] = navPoints.Find("navpoint_Outer_East").transform.position;
             navpoint_East_Position[1] = navPoints.Find("navpoint_NorthWest").transform.position;
+
+            if(ValidNavPointObject == null)
+                ValidNavPointObject = navPoints.Find("navpoint_Outer_East").gameObject;
         }
         else
         {
@@ -89,6 +98,9 @@ public class c_PowerCoreStructure : MonoBehaviour
             print("<color=red>HIT</color>");
             navpoint_West_Position[0] = navPoints.Find("navpoint_Outer_West").transform.position;
             navpoint_West_Position[1] = navPoints.Find("navpoint_SouthEast").transform.position;
+
+            if (ValidNavPointObject == null)
+                ValidNavPointObject = navPoints.Find("navpoint_Outer_West").gameObject;
         }
         else
         {
@@ -104,6 +116,9 @@ public class c_PowerCoreStructure : MonoBehaviour
             print("<color=red>HIT</color>");
             navpoint_South_Position[0] = navPoints.Find("navpoint_Outer_South").transform.position;
             navpoint_South_Position[1] = navPoints.Find("navpoint_NorthEast").transform.position;
+
+            if (ValidNavPointObject == null)
+                ValidNavPointObject = navPoints.Find("navpoint_Outer_South").gameObject;
         }
         else
         {
@@ -118,15 +133,34 @@ public class c_PowerCoreStructure : MonoBehaviour
 
     public void RunPowerCorePointInitialPathing()
     {
-        GameObject SpawnerObject;
+        if(ValidNavPointObject == null)
+        {
+            print("<color=red>POWER CORE STRUCTURE HAS NO VALID NAVPOINT OBJECTS - </color>" + gameObject.name);
+            return;
+        }
+
+        GameObject SpawnerObject = null;
+        NavMeshPath _path = new NavMeshPath();
+        NavMeshAgent navAgent = ValidNavPointObject.GetComponent<NavMeshAgent>();
+
         // Get a valid NavMeshAgent for a reference point.
         // Navigate to each EnemySpawner until you have PathComplete solution.
         // Snag it and move on.
 
         foreach (GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
         {
-            print("<color=orange>*****</color> " + spawnerObject.name);
+            Vector3 spawnerStartPos = spawnerObject.transform.Find("NavMeshAgentObj").transform.position;
+
+            navAgent.CalculatePath(spawnerStartPos, _path);
+
+            if(_path.status == NavMeshPathStatus.PathComplete)
+            {
+                SpawnerObject = spawnerObject;
+                break;
+            }
         }
+
+        print("Power Core Struct " + gameObject.name + " is connected to " +  SpawnerObject.name);
 
         // Now go through all valid positions and navigate toward other valid checkpoints
         // (such as the Enemy Spawner or other Power Cores)
