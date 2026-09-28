@@ -22,6 +22,7 @@ public class c_PowerCoreStructure : MonoBehaviour
     c_LevelLogic LevelLogic;
     void Awake()
     {
+        print("<color=orange>Power Core - Awake: " + gameObject.name);
         LevelLogicObj = GameObject.Find("LevelLogic");
         LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
         
@@ -112,14 +113,19 @@ public class c_PowerCoreStructure : MonoBehaviour
             navPoints.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().enabled = false;
         }
 
+        
+    }
+
+    public void RunPowerCorePointInitialPathing()
+    {
         GameObject SpawnerObject;
         // Get a valid NavMeshAgent for a reference point.
         // Navigate to each EnemySpawner until you have PathComplete solution.
         // Snag it and move on.
 
-        foreach(GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
+        foreach (GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
         {
-
+            print("<color=orange>*****</color> " + spawnerObject.name);
         }
 
         // Now go through all valid positions and navigate toward other valid checkpoints
@@ -135,9 +141,9 @@ public class c_PowerCoreStructure : MonoBehaviour
         // If this is the Tertiary, I need to consider for the Primary AND Secondary.
         List<Vector3> ConnectedDestinationList = new List<Vector3>();
 
-        if(navpoint_North_Valid)
+        if (navpoint_North_Valid)
         {
-            
+
         }
     }
 

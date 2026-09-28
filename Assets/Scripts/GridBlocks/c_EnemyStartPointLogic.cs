@@ -18,23 +18,31 @@ public class c_EnemyStartPointLogic : MonoBehaviour
     List<GameObject> AllPowerCoreStructures;
     #endregion Level Logic Connections
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        #region NavMesh Data
-        NavMeshChildObject = transform.Find("NavMeshAgentObj").gameObject;
-        NavAgent = NavMeshChildObject.GetComponent<NavMeshAgent>();
-        #endregion NavMesh Data
-
-        #region Level Logic Connections
         levelLogic = GameObject.Find("LevelLogic").gameObject;
 
         // Register self for evaluation
         levelLogic.GetComponent<c_LevelLogic>().RegisterLevelObject(LevelObjectTypes.EnemySpawnPoint, gameObject);
 
+        #region NavMesh Data
+        NavMeshChildObject = transform.Find("NavMeshAgentObj").gameObject;
+        NavAgent = NavMeshChildObject.GetComponent<NavMeshAgent>();
+        #endregion NavMesh Data
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        // print("<color=orange>Spawner - Start: " + gameObject.name);
+    }
+
+    public void RunEnemyStartPointInitialPathing()
+    {
+        #region Level Logic Connections
         // Get all PowerCoreStructures for evaluation
         AllPowerCoreStructures = new List<GameObject>();
-        foreach(GameObject powerCoreObj in levelLogic.GetComponent<c_LevelLogic>().GetPowerCoreStructures())
+        foreach (GameObject powerCoreObj in levelLogic.GetComponent<c_LevelLogic>().GetPowerCoreStructures())
         {
             AllPowerCoreStructures.Add(powerCoreObj);
         }
@@ -114,6 +122,8 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         AllPowerCoreStructures.Clear();
         powerCoreDistances.Clear();
+
+        EnemyDestinationList = new List<GameObject>();
 
         foreach(GameObject tempPowerCore in tempPowerCoreList)
         {

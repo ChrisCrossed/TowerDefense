@@ -7,9 +7,15 @@ public class c_LevelLogic : MonoBehaviour
     List<GameObject> EnemySpawnObjects;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    void Start()
     {
+        print("<color=orange>Level Logic - Start: " + gameObject.name);
 
+        foreach (GameObject obj in EnemySpawnObjects)
+            obj.GetComponent<c_EnemyStartPointLogic>().RunEnemyStartPointInitialPathing();
+
+        foreach (GameObject obj in PowerCoreStructures)
+            obj.GetComponent<c_PowerCoreStructure>().RunPowerCorePointInitialPathing();
     }
 
     /// <summary>
