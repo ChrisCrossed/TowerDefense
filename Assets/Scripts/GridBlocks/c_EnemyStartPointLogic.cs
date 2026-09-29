@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class c_EnemyStartPointLogic : MonoBehaviour
 {
+    [SerializeField] bool DebugThis;
+
     #region NavMesh Data
     GameObject NavMeshChildObject;
     NavMeshAgent NavAgent;
@@ -34,10 +36,15 @@ public class c_EnemyStartPointLogic : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // print("<color=orange>Spawner - Start: " + gameObject.name);
+        if(DebugThis) print("<color=orange>Spawner - Start: " + gameObject.name);
     }
 
-    public void RunEnemyStartPointInitialPathing()
+    public void START_LevelLogic()
+    {
+        RunEnemyStartPointInitialPathing();
+    }
+
+    void RunEnemyStartPointInitialPathing()
     {
         #region Level Logic Connections
         // Get all PowerCoreStructures for evaluation
@@ -53,9 +60,6 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
     void INIT_GetPowerCoreConnections()
     {
-        print("<color=red>---</color>");
-        print("Running test for: " + gameObject.name);
-
         NavMeshPath _path = new NavMeshPath();
 
         // get all power cores
@@ -92,7 +96,7 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
             powerCoreDistances.Add(dist);
 
-            // print("<color=red> --------- </color> Distance to " + AllPowerCoreStructures[i].gameObject.name + ": " + powerCoreDistances[i]);
+            if(DebugThis) print("<color=red> --------- </color> Distance to " + AllPowerCoreStructures[i].gameObject.name + ": " + powerCoreDistances[i]);
             #endregion Determine best PowerCoreStructure
         }
 
@@ -135,14 +139,14 @@ public class c_EnemyStartPointLogic : MonoBehaviour
             EnemyDestinationList.Add(tempPowerCore);
         }
 
-        // DEBUG TEXT
-        /*
-        print("<color=red>" + gameObject.name + " found " + AllPowerCoreStructures.Count + " valid Power Cores.</color>");
-        for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+        if(DebugThis)
         {
-            print("<color=red>" + AllPowerCoreStructures[i].name + " has a dist of " + powerCoreDistances[i] + "</color>");
+            print("<color=red>" + gameObject.name + " found " + AllPowerCoreStructures.Count + " valid Power Cores.</color>");
+            for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+            {
+                print("<color=red>" + AllPowerCoreStructures[i].name + " has a dist of " + powerCoreDistances[i] + "</color>");
+            }
         }
-        */
 
         if(AllPowerCoreStructures.Count == 1)
         {
@@ -159,12 +163,13 @@ public class c_EnemyStartPointLogic : MonoBehaviour
         }
 
         // DEBUG TEXT
-        /*
-        for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+        if(DebugThis)
         {
-            print("<color=red>" + AllPowerCoreStructures[i].name + " has a Rank of " + AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>().GetPowerCoreRank() + "</color>");
+            for (int i = 0; i < AllPowerCoreStructures.Count; ++i)
+            {
+                print("<color=red>" + AllPowerCoreStructures[i].name + " has a Rank of " + AllPowerCoreStructures[i].GetComponent<c_PowerCoreStructure>().GetPowerCoreRank() + "</color>");
+            }
         }
-        */
     }
 
     List<GameObject> EnemyDestinationList;

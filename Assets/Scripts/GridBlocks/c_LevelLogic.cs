@@ -6,16 +6,16 @@ public class c_LevelLogic : MonoBehaviour
     List<GameObject> PowerCoreStructures;
     List<GameObject> EnemySpawnObjects;
 
+    [SerializeField] bool DebugThis;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        print("<color=orange>Level Logic - Start: " + gameObject.name);
-
         foreach (GameObject obj in EnemySpawnObjects)
-            obj.GetComponent<c_EnemyStartPointLogic>().RunEnemyStartPointInitialPathing();
+            obj.GetComponent<c_EnemyStartPointLogic>().START_LevelLogic();
 
         foreach (GameObject obj in PowerCoreStructures)
-            obj.GetComponent<c_PowerCoreStructure>().RunPowerCorePointInitialPathing();
+            obj.GetComponent<c_PowerCoreStructure>().START_LevelLogic();
     }
 
     /// <summary>
@@ -28,13 +28,13 @@ public class c_LevelLogic : MonoBehaviour
         if (PowerCoreStructures == null)
         {
             PowerCoreStructures = new List<GameObject>();
-            print("Created new Power Core Struct List");
+            if(DebugThis) print("Created new Power Core Struct List");
         }
 
         if (EnemySpawnObjects == null)
         {
             EnemySpawnObjects = new List<GameObject>();
-            print("Created new Enemy Spawn Objects List");
+            if(DebugThis) print("Created new Enemy Spawn Objects List");
         }
 
         switch (_type)
@@ -51,7 +51,7 @@ public class c_LevelLogic : MonoBehaviour
                 break;
         }
 
-        print("Registered Level Object: " + _self.name);
+        if(DebugThis) print("Registered Level Object: " + _self.name);
     }
 
     

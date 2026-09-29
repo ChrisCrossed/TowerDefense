@@ -68,7 +68,7 @@ public class c_GridBlockLogic : MonoBehaviour
                     // Also need a better way to get the relevant NavMeshLink object (for scenarios such as bridges and elongated pieces that have 2+ navmesh points)
                     NavMeshLinks[i].endTransform = TEMP_CONNECTION.gameObject.GetComponent<c_GridBlockLogic>().GetNavMeshLinkTransform( (Directions)i );
 
-                    print("Setting transform: " + NavMeshLinks[i].endTransform.position);
+                    if(DebugThis) print("Setting transform: " + NavMeshLinks[i].endTransform.position);
 
                     GO_NeighborConnections[i] = TEMP_CONNECTION;
                 }

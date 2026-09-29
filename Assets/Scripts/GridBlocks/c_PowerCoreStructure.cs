@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 public class c_PowerCoreStructure : MonoBehaviour
 {
+    [SerializeField] bool DebugThis;
+
     PowerCoreRank powerCoreRank;
 
     bool navpoint_North_Valid = true;
@@ -22,7 +24,7 @@ public class c_PowerCoreStructure : MonoBehaviour
     c_LevelLogic LevelLogic;
     void Awake()
     {
-        print("<color=orange>Power Core - Awake: " + gameObject.name);
+        if(DebugThis) print("<color=orange>Power Core - Awake: " + gameObject.name);
         LevelLogicObj = GameObject.Find("LevelLogic");
         LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
         
@@ -60,7 +62,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Check if North direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.forward * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            print("<color=red>HIT</color>");
+            if(DebugThis) print("<color=red>HIT</color>");
             navpoint_North_Position[0] = navPoints.Find("navpoint_Outer_North").transform.position;
             navpoint_North_Position[1] = navPoints.Find("navpoint_SouthWest").transform.position;
 
@@ -77,7 +79,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Check if East direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.right * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            print("<color=red>HIT</color>");
+            if(DebugThis) print("<color=red>HIT</color>");
             navpoint_East_Position[0] = navPoints.Find("navpoint_Outer_East").transform.position;
             navpoint_East_Position[1] = navPoints.Find("navpoint_NorthWest").transform.position;
 
@@ -95,7 +97,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Check if West direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.left * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            print("<color=red>HIT</color>");
+            if(DebugThis) print("<color=red>HIT</color>");
             navpoint_West_Position[0] = navPoints.Find("navpoint_Outer_West").transform.position;
             navpoint_West_Position[1] = navPoints.Find("navpoint_SouthEast").transform.position;
 
@@ -113,7 +115,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Check if South direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.back * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            print("<color=red>HIT</color>");
+            if(DebugThis) print("<color=red>HIT</color>");
             navpoint_South_Position[0] = navPoints.Find("navpoint_Outer_South").transform.position;
             navpoint_South_Position[1] = navPoints.Find("navpoint_NorthEast").transform.position;
 
@@ -131,7 +133,12 @@ public class c_PowerCoreStructure : MonoBehaviour
         
     }
 
-    public void RunPowerCorePointInitialPathing()
+    public void START_LevelLogic()
+    {
+        RunPowerCorePointInitialPathing();
+    }
+
+    void RunPowerCorePointInitialPathing()
     {
         if(ValidNavPointObject == null)
         {
@@ -160,7 +167,7 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
-        print("Power Core Struct " + gameObject.name + " is connected to " +  SpawnerObject.name);
+        if(DebugThis) print("Power Core Struct " + gameObject.name + " is connected to " +  SpawnerObject.name);
 
         // Now go through all valid positions and navigate toward other valid checkpoints
         // (such as the Enemy Spawner or other Power Cores)
