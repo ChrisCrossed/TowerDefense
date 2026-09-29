@@ -169,11 +169,26 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         if(DebugThis) print("Power Core Struct " + gameObject.name + " is connected to " +  SpawnerObject.name);
 
-        // Now go through all valid positions and navigate toward other valid checkpoints
-        // (such as the Enemy Spawner or other Power Cores)
-        // If this power core is the Primary, then determine which direction goes toward the Spawner
-        // If this power core is the Secondary or Tertiary, determine what are connected.
+        // When an Enemy walks INTO this PowerCore, if they are passing through, I need to know which exit they're taking.
+        // In that case, I need to know the correct EXIT they need, and guide them there.
 
+        // BUT. If this PowerCore is their destination, I want them to roundabout the core and take the same entrance back.
+
+        // Examples:
+        // 1.) Enemy walks into PowerCore struct. THIS is their goal.
+        //    1a.) Give Roundabout instructions. Give Core if available. Direct back through same entrance.
+        //
+        // 2.) Enemy walks into PowerCore struct. DIFFERENT PowerCore struct is their goal.
+        //    2a.) Is there a PowerCore here? Yes: Perform 1a.
+        //    2b.) No? Get desired goal and give Roundabout instructions toward desired goal.
+        //
+        // 3.) Enemy walks into PowerCore struct. They are returning to spawner.
+        //    3a.) Get desired goal and give Roundabout instructions toward desired goal.
+        //
+        // Closing Notes: Need entrance position, need desired goal.
+        // I could find the 'Midpoint' of the roundabout pathing and run a 'Give PowerCore'-style logic at that point, maybe?
+
+        // If SoloCore, give default roundabout instructions.
         if (powerCoreRank == PowerCoreRank.SoloCore) return;
 
         // I need to get the positions to test for the other PowerCores/Spawner.
