@@ -2,9 +2,9 @@
 public enum Directions
 {
     North = 0,
-    East = 1,
-    West = 2,
-    South = 3
+    West = 1,
+    South = 2,
+    East = 3
 }
 
 public enum UserLayers

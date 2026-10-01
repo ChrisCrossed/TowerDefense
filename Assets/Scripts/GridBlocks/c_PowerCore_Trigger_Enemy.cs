@@ -11,6 +11,17 @@ public class c_PowerCore_Trigger_Enemy : MonoBehaviour
         if (other.tag == "Enemy")
         {
             if(DebugThis) print("Found enemy: " + other.gameObject.name + " with PowerCore Goal: " + other.gameObject.GetComponent<c_ScriptTest>().PowerCoreGoal);
+
+            Vector2 entranceDir = new Vector2(other.transform.position.x - gameObject.transform.position.x, other.transform.position.z - gameObject.transform.position.z);
+            entranceDir.Normalize();
+
+            Directions dir = Directions.West;
+
+            if      (entranceDir.x > 0.5f)   dir = Directions.East;
+            else if (entranceDir.y > 0.5f)   dir = Directions.North;
+            else if (entranceDir.y < -0.05f) dir = Directions.South;
+
+            print(dir.ToString());
         }
 
         // print("Collision: " + collision.gameObject.name);

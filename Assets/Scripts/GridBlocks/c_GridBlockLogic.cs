@@ -46,9 +46,9 @@ public class c_GridBlockLogic : MonoBehaviour
         // N/E/W/S directions
         Vector3[] directions = new Vector3[4];
         directions[(int)Directions.North] = gameObject.transform.position - (Vector3.forward * gameObject.transform.localScale.x);
-        directions[(int)Directions.East] = gameObject.transform.position - (Vector3.right * gameObject.transform.localScale.x);
         directions[(int)Directions.West] = gameObject.transform.position - (Vector3.left * gameObject.transform.localScale.x);
         directions[(int)Directions.South] = gameObject.transform.position - (Vector3.back * gameObject.transform.localScale.x);
+        directions[(int)Directions.East] = gameObject.transform.position - (Vector3.right * gameObject.transform.localScale.x);
 
         Vector3 overlapBoxSize = new Vector3(0.1f, 0.1f, 0.1f);
 

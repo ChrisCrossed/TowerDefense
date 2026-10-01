@@ -20,6 +20,8 @@ public class c_PowerCoreStructure : MonoBehaviour
     bool navpoint_South_Valid = true;
     Vector3[] navpoint_South_Position = new Vector3[2];
 
+    Vector3[] CarouselDirections;
+
     GameObject LevelLogicObj;
     c_LevelLogic LevelLogic;
     void Awake()
@@ -35,6 +37,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         LevelLogic.RegisterLevelObject(LevelObjectTypes.PowerCoreStructure, gameObject);
 
         DetermineValidWrapPoints();
+        SetCarouselDirections();
     }
 
     public void SetPowerCoreRank(PowerCoreRank _rank)
@@ -135,6 +138,17 @@ public class c_PowerCoreStructure : MonoBehaviour
         }
 
         
+    }
+
+    // Assigns the four Carousel positions in CounterClockwise order when Enemies walk in the Trigger
+    void SetCarouselDirections()
+    {
+        CarouselDirections = new Vector3[4];
+
+        CarouselDirections[0] = navpoint_North_Position[1];
+        CarouselDirections[1] = navpoint_West_Position[1];
+        CarouselDirections[2] = navpoint_South_Position[1];
+        CarouselDirections[3] = navpoint_East_Position[1];
     }
 
     public void START_LevelLogic()
