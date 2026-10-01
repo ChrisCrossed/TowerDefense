@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class c_LevelLogic : MonoBehaviour
@@ -16,6 +17,9 @@ public class c_LevelLogic : MonoBehaviour
 
         foreach (GameObject obj in PowerCoreStructures)
             obj.GetComponent<c_PowerCoreStructure>().START_LevelLogic();
+
+        // This is where I want to re-reun the NavMesh Bake, after all entities have modified themselves
+        GameObject.Find("NavMeshObject").GetComponent<NavMeshSurface>().BuildNavMesh();
     }
 
     /// <summary>

@@ -38,6 +38,7 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         DetermineValidWrapPoints();
         SetCarouselDirections();
+        DisableEditorVisualGuides();
     }
 
     public void SetPowerCoreRank(PowerCoreRank _rank)
@@ -65,6 +66,9 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         RaycastHit _hit;
         int layerMask = LayerMask.GetMask("GridBlock");
+
+        // LOGIC NEEDS TO CHANGE IF BLOCK DOESN'T HAVE CONNECTIONS OUTWARD
+        // This is for navpoint_<DIR>_Valid booleans
 
         // Check if North direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.forward * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
@@ -149,6 +153,21 @@ public class c_PowerCoreStructure : MonoBehaviour
         CarouselDirections[1] = navpoint_West_Position[1];
         CarouselDirections[2] = navpoint_South_Position[1];
         CarouselDirections[3] = navpoint_East_Position[1];
+    }
+
+    void DisableEditorVisualGuides()
+    {
+        transform.Find("Corner_NorthWest").gameObject.SetActive(false);
+        transform.Find("Corner_NorthEast").gameObject.SetActive(false);
+        transform.Find("Corner_SouthWest").gameObject.SetActive(false);
+        transform.Find("Corner_SouthEast").gameObject.SetActive(false);
+
+        Transform pathingNavBlocks = transform.Find("PathingNavBlocks");
+
+        pathingNavBlocks.Find("Path_North").gameObject.SetActive(navpoint_North_Valid);
+        pathingNavBlocks.Find("Path_West").gameObject.SetActive(navpoint_West_Valid);
+        pathingNavBlocks.Find("Path_South").gameObject.SetActive(navpoint_South_Valid);
+        pathingNavBlocks.Find("Path_East").gameObject.SetActive(navpoint_East_Valid);
     }
 
     public void START_LevelLogic()
