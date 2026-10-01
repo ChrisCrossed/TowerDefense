@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class c_PowerCore_Trigger_Enemy : MonoBehaviour
 {
-    [SerializeField] bool DebugThis;
+    public bool DebugThis { private get; set; }
 
-    public bool IsPassthroughTest;
+    public bool IsPassthroughTest { private get; set; }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag(UserLayers.Enemy.ToString()))
+        if (other.tag == "Enemy")
         {
             if(DebugThis) print("Found enemy: " + other.gameObject.name + " with PowerCore Goal: " + other.gameObject.GetComponent<c_ScriptTest>().PowerCoreGoal);
         }

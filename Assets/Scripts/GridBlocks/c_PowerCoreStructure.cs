@@ -24,7 +24,11 @@ public class c_PowerCoreStructure : MonoBehaviour
     c_LevelLogic LevelLogic;
     void Awake()
     {
-        if(DebugThis) print("<color=orange>Power Core - Awake: " + gameObject.name);
+        if (DebugThis)
+            print("<color=orange>Power Core - Awake: " + gameObject.name);
+
+        gameObject.transform.Find("Trigger_Enemy").GetComponent<c_PowerCore_Trigger_Enemy>().DebugThis = DebugThis;
+
         LevelLogicObj = GameObject.Find("LevelLogic");
         LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
         
