@@ -9,17 +9,33 @@ public class c_LevelLogic : MonoBehaviour
 
     [SerializeField] bool DebugThis;
 
+    private void Awake()
+    {
+        // This is where I want to re-reun the NavMesh Bake, after all entities have modified themselves
+        GameObject.Find("NavMeshObject").GetComponent<NavMeshSurface>().BuildNavMesh();
+
+        
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        foreach (GameObject obj in EnemySpawnObjects)
+            obj.GetComponent<c_EnemyStartPointLogic>().AWAKE_LevelLogic();
+
+        foreach (GameObject obj in PowerCoreStructures)
+            obj.GetComponent<c_PowerCoreStructure>().AWAKE_LevelLogic();
+
+        // ********************************** //
+
+        // This is where I want to re-reun the NavMesh Bake, after all entities have modified themselves
+        GameObject.Find("NavMeshObject").GetComponent<NavMeshSurface>().BuildNavMesh();
+
         foreach (GameObject obj in EnemySpawnObjects)
             obj.GetComponent<c_EnemyStartPointLogic>().START_LevelLogic();
 
         foreach (GameObject obj in PowerCoreStructures)
             obj.GetComponent<c_PowerCoreStructure>().START_LevelLogic();
-
-        // This is where I want to re-reun the NavMesh Bake, after all entities have modified themselves
-        GameObject.Find("NavMeshObject").GetComponent<NavMeshSurface>().BuildNavMesh();
     }
 
     /// <summary>

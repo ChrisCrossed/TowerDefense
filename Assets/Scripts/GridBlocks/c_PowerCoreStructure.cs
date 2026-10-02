@@ -24,21 +24,30 @@ public class c_PowerCoreStructure : MonoBehaviour
 
     GameObject LevelLogicObj;
     c_LevelLogic LevelLogic;
-    void Awake()
+
+    private void Awake()
+    {
+        LevelLogicObj = GameObject.Find("LevelLogic");
+        LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
+
+        LevelLogic.RegisterLevelObject(LevelObjectTypes.PowerCoreStructure, gameObject);
+    }
+
+    public void AWAKE_LevelLogic()
     {
         if (DebugThis)
             print("<color=orange>Power Core - Awake: " + gameObject.name);
 
         gameObject.transform.Find("Trigger_Enemy").GetComponent<c_PowerCore_Trigger_Enemy>().DebugThis = DebugThis;
 
-        LevelLogicObj = GameObject.Find("LevelLogic");
-        LevelLogic = LevelLogicObj.GetComponent<c_LevelLogic>();
-        
-        LevelLogic.RegisterLevelObject(LevelObjectTypes.PowerCoreStructure, gameObject);
-
         DetermineValidWrapPoints();
         SetCarouselDirections();
         DisableEditorVisualGuides();
+    }
+
+    public void START_LevelLogic()
+    {
+        RunPowerCorePointInitialPathing();
     }
 
     public void SetPowerCoreRank(PowerCoreRank _rank)
@@ -84,28 +93,11 @@ public class c_PowerCoreStructure : MonoBehaviour
             navPoints.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>().enabled = false;
         }
 
-        // Check if East direction has a valid block
-        if (Physics.Raycast(gameObject.transform.position + (Vector3.right * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
-        {
-            if(DebugThis) print("<color=red>HIT</color>");
-            navpoint_East_Position[0] = navPoints.Find("navpoint_Outer_East").transform.position;
-            navpoint_East_Position[1] = navPoints.Find("navpoint_NorthWest").transform.position;
-
-            if(ValidNavPointObject == null)
-                ValidNavPointObject = navPoints.Find("navpoint_Outer_East").gameObject;
-        }
-        else
-        {
-            // Disable the navpoint_SouthEast obj
-            navpoint_East_Valid = false;
-
-            navPoints.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().enabled = false;
-        }
 
         // Check if West direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.left * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            if(DebugThis) print("<color=red>HIT</color>");
+            if (DebugThis) print("<color=red>HIT</color>");
             navpoint_West_Position[0] = navPoints.Find("navpoint_Outer_West").transform.position;
             navpoint_West_Position[1] = navPoints.Find("navpoint_SouthEast").transform.position;
 
@@ -123,7 +115,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Check if South direction has a valid block
         if (Physics.Raycast(gameObject.transform.position + (Vector3.back * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
         {
-            if(DebugThis) print("<color=red>HIT</color>");
+            if (DebugThis) print("<color=red>HIT</color>");
             navpoint_South_Position[0] = navPoints.Find("navpoint_Outer_South").transform.position;
             navpoint_South_Position[1] = navPoints.Find("navpoint_NorthEast").transform.position;
 
@@ -138,7 +130,23 @@ public class c_PowerCoreStructure : MonoBehaviour
             navPoints.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().enabled = false;
         }
 
-        
+        // Check if East direction has a valid block
+        if (Physics.Raycast(gameObject.transform.position + (Vector3.right * blockDist) + (Vector3.up * vertCheckDist), Vector3.down, out _hit, vertCheckDist, layerMask))
+        {
+            if(DebugThis) print("<color=red>HIT</color>");
+            navpoint_East_Position[0] = navPoints.Find("navpoint_Outer_East").transform.position;
+            navpoint_East_Position[1] = navPoints.Find("navpoint_NorthWest").transform.position;
+
+            if(ValidNavPointObject == null)
+                ValidNavPointObject = navPoints.Find("navpoint_Outer_East").gameObject;
+        }
+        else
+        {
+            // Disable the navpoint_SouthEast obj
+            navpoint_East_Valid = false;
+
+            navPoints.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().enabled = false;
+        }
     }
 
     // Assigns the four Carousel positions in CounterClockwise order when Enemies walk in the Trigger
@@ -167,10 +175,9 @@ public class c_PowerCoreStructure : MonoBehaviour
         pathingNavBlocks.Find("Path_East").gameObject.SetActive(navpoint_East_Valid);
     }
 
-    public void START_LevelLogic()
-    {
-        RunPowerCorePointInitialPathing();
-    }
+    
+
+    
 
     void RunPowerCorePointInitialPathing()
     {
@@ -179,6 +186,8 @@ public class c_PowerCoreStructure : MonoBehaviour
             print("<color=red>POWER CORE STRUCTURE HAS NO VALID NAVPOINT OBJECTS - </color>" + gameObject.name);
             return;
         }
+
+        Transform navPoints = gameObject.transform.Find("NavPoints").transform;
 
         GameObject SpawnerObject = null;
         NavMeshPath _path = new NavMeshPath();
@@ -201,40 +210,58 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
-        if(DebugThis) print("Power Core Struct " + gameObject.name + " is connected to " +  SpawnerObject.name);
-
-        // When an Enemy walks INTO this PowerCore, if they are passing through, I need to know which exit they're taking.
-        // In that case, I need to know the correct EXIT they need, and guide them there.
-
-        // BUT. If this PowerCore is their destination, I want them to roundabout the core and take the same entrance back.
-
-        // Examples:
-        // 1.) Enemy walks into PowerCore struct. THIS is their goal.
-        //    1a.) Give Roundabout instructions. Give Core if available. Direct back through same entrance.
-        //
-        // 2.) Enemy walks into PowerCore struct. DIFFERENT PowerCore struct is their goal.
-        //    2a.) Is there a PowerCore here? Yes: Perform 1a.
-        //    2b.) No? Get desired goal and give Roundabout instructions toward desired goal.
-        //
-        // 3.) Enemy walks into PowerCore struct. They are returning to spawner.
-        //    3a.) Get desired goal and give Roundabout instructions toward desired goal.
-        //
-        // Closing Notes: Need entrance position, need desired goal.
-        // I could find the 'Midpoint' of the roundabout pathing and run a 'Give PowerCore'-style logic at that point, maybe?
+        if(DebugThis) print("Power Core Struct "
+            + gameObject.name + " is connected to "
+            +  SpawnerObject.name);
 
         // If SoloCore, give default roundabout instructions.
-        if (powerCoreRank == PowerCoreRank.SoloCore) return;
+        // if (powerCoreRank == PowerCoreRank.SoloCore) return;
 
-        // I need to get the positions to test for the other PowerCores/Spawner.
-        // if this is the Primary, I need to also consider if the Spawner is connected.
-        // if this is the Secondary, I need to consider for Tertiary AND Primary.
-        // If this is the Tertiary, I need to consider for the Primary AND Secondary.
-        List<Vector3> ConnectedDestinationList = new List<Vector3>();
+        // Starting with the West navpoint, scan through which destination is viable.
+        // 1.) Scan the StartPoint as the initial direct goal, and store the distance/object.
+        // 2.) If this PowerCore is 'SoloCore', we're done. Return out.
+        // 3.) Otherwise, we loop through other possible PowerCore structures. Store their distances.
+        // 4.) I want to store the closest destination for each given entrance.
+        //    4.a) As long as all cores/startpoints are given at least one path exit, it's fine for the remaining exits to share a common exit goal.
 
-        if (navpoint_North_Valid)
+        float currDist = Mathf.Infinity;
+        GameObject currNavpoint = navPoints.Find("navpoint_Outer_West").gameObject;
+        navAgent = currNavpoint.GetComponent<NavMeshAgent>();
+        GameObject currentBestGoal = null;
+
+        if (navpoint_West_Valid)
         {
+            _path = new NavMeshPath();
 
+            print("West Valid");
+            float tempDist = 0f;
+
+            print("Spawner: " + SpawnerObject.name);
+
+            navAgent.CalculatePath(SpawnerObject.transform.position, _path);
+
+            print(_path.corners[0] + " + " + _path.corners[1] + " = " + Vector3.Distance(_path.corners[0], _path.corners[1]));
+            print(_path.corners[1] + " + " + _path.corners[2] + " = " + Vector3.Distance(_path.corners[1], _path.corners[2]));
+            print(_path.corners[2] + " + " + _path.corners[3] + " = " + Vector3.Distance(_path.corners[2], _path.corners[3]));
+            print(_path.corners[3] + " + " + _path.corners[4] + " = " + Vector3.Distance(_path.corners[3], _path.corners[4]));
+
+            /*
+            for(int i = 0; i < _path.corners.Length - 1; i++)
+                tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
+            */
+
+            print(tempDist);
+
+            if (tempDist < currDist)
+            {
+                currDist = tempDist;
+                currentBestGoal = SpawnerObject; // SpawnerObject gets replaced with whatever potential connections exist
+            }
         }
+
+        print(currNavpoint.gameObject.name
+            + " current best goal: "
+            + currentBestGoal.name);
     }
 
     // Update is called once per frame

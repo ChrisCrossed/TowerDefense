@@ -26,17 +26,14 @@ public class c_EnemyStartPointLogic : MonoBehaviour
 
         // Register self for evaluation
         levelLogic.GetComponent<c_LevelLogic>().RegisterLevelObject(LevelObjectTypes.EnemySpawnPoint, gameObject);
+    }
 
+    public void AWAKE_LevelLogic()
+    {
         #region NavMesh Data
         NavMeshChildObject = transform.Find("NavMeshAgentObj").gameObject;
         NavAgent = NavMeshChildObject.GetComponent<NavMeshAgent>();
         #endregion NavMesh Data
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        if(DebugThis) print("<color=orange>Spawner - Start: " + gameObject.name);
     }
 
     public void START_LevelLogic()
