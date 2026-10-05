@@ -47,6 +47,11 @@ public class c_PowerCoreStructure : MonoBehaviour
 
     public void START_LevelLogic()
     {
+        
+    }
+
+    public void POST_START_LevelLogic()
+    {
         RunPowerCorePointInitialPathing();
     }
 
@@ -187,7 +192,7 @@ public class c_PowerCoreStructure : MonoBehaviour
             return;
         }
 
-        Transform navPoints = gameObject.transform.Find("NavPoints").transform;
+        GameObject navPoints = gameObject.transform.Find("NavPoints").gameObject;
 
         GameObject SpawnerObject = null;
         NavMeshPath _path = new NavMeshPath();
@@ -210,9 +215,13 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        print("Spawner Object: " + SpawnerObject.name);
+
         if(DebugThis) print("Power Core Struct "
             + gameObject.name + " is connected to "
             +  SpawnerObject.name);
+
+        // print(_path.corners.Length);
 
         // If SoloCore, give default roundabout instructions.
         // if (powerCoreRank == PowerCoreRank.SoloCore) return;
@@ -225,30 +234,30 @@ public class c_PowerCoreStructure : MonoBehaviour
         //    4.a) As long as all cores/startpoints are given at least one path exit, it's fine for the remaining exits to share a common exit goal.
 
         float currDist = Mathf.Infinity;
-        GameObject currNavpoint = navPoints.Find("navpoint_Outer_West").gameObject;
+        GameObject currNavpoint = navPoints.transform.Find("navpoint_Outer_West").gameObject;
         navAgent = currNavpoint.GetComponent<NavMeshAgent>();
         GameObject currentBestGoal = null;
 
         if (navpoint_West_Valid)
         {
-            _path = new NavMeshPath();
-
             print("West Valid");
             float tempDist = 0f;
 
+            Vector3 destinationPos = SpawnerObject.transform.Find("NavMeshAgentObj").gameObject.transform.position;
+
+            print("<color=red>-----</color>");
             print("Spawner: " + SpawnerObject.name);
+            print("Pos: " + destinationPos);
+            print("NavAgent: " + navAgent.gameObject.name);
 
-            navAgent.CalculatePath(SpawnerObject.transform.position, _path);
+            navAgent.CalculatePath(destinationPos, _path);
 
-            print(_path.corners[0] + " + " + _path.corners[1] + " = " + Vector3.Distance(_path.corners[0], _path.corners[1]));
-            print(_path.corners[1] + " + " + _path.corners[2] + " = " + Vector3.Distance(_path.corners[1], _path.corners[2]));
-            print(_path.corners[2] + " + " + _path.corners[3] + " = " + Vector3.Distance(_path.corners[2], _path.corners[3]));
-            print(_path.corners[3] + " + " + _path.corners[4] + " = " + Vector3.Distance(_path.corners[3], _path.corners[4]));
+            print("Status: " + _path.status);
+            print("Obj: " + gameObject.transform.name + ": " +  navAgent.path.corners.Length);
+            print(_path.corners.Length);
 
-            /*
             for(int i = 0; i < _path.corners.Length - 1; i++)
                 tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
-            */
 
             print(tempDist);
 
