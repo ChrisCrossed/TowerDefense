@@ -21,6 +21,7 @@ public class c_PowerCoreStructure : MonoBehaviour
     Vector3[] navpoint_South_Position = new Vector3[2];
 
     Vector3[] CarouselDirections;
+    List<PowerCoreDestination> PowerCoreDestinations;
 
     GameObject LevelLogicObj;
     c_LevelLogic LevelLogic;
@@ -47,7 +48,7 @@ public class c_PowerCoreStructure : MonoBehaviour
 
     public void START_LevelLogic()
     {
-        
+        PowerCoreDestinations = new List<PowerCoreDestination>();
     }
 
     public void POST_START_LevelLogic()
@@ -215,6 +216,16 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        List<PowerCoreDestination> tempDestinations = new List<PowerCoreDestination>();
+        if (navpoint_North_Valid)
+        {
+            // PowerCoreDestination northDestination = new PowerCoreDestination(null, navpoint_North_Position[0])
+        }
+
+
+
+        /*
+
         print("Spawner Object: " + SpawnerObject.name);
 
         if(DebugThis) print("Power Core Struct "
@@ -224,7 +235,14 @@ public class c_PowerCoreStructure : MonoBehaviour
         // print(_path.corners.Length);
 
         // If SoloCore, give default roundabout instructions.
-        // if (powerCoreRank == PowerCoreRank.SoloCore) return;
+        if (powerCoreRank == PowerCoreRank.SoloCore || powerCoreRank == PowerCoreRank.Primary)
+        {
+            PowerCoreDestination tempDest = new PowerCoreDestination(SpawnerObject, ValidNavPointObject.transform, true);
+
+            PowerCoreDestinations.Add(tempDest);
+
+            if(powerCoreRank == PowerCoreRank.SoloCore) return;
+        }
 
         // Starting with the West navpoint, scan through which destination is viable.
         // 1.) Scan the StartPoint as the initial direct goal, and store the distance/object.
@@ -232,6 +250,9 @@ public class c_PowerCoreStructure : MonoBehaviour
         // 3.) Otherwise, we loop through other possible PowerCore structures. Store their distances.
         // 4.) I want to store the closest destination for each given entrance.
         //    4.a) As long as all cores/startpoints are given at least one path exit, it's fine for the remaining exits to share a common exit goal.
+
+        // Primary / SoloCore are the only ones that can connect to Spawner.
+        // Secondary / Tertiary can only connect to Primary.
 
         float currDist = Mathf.Infinity;
         GameObject currNavpoint = navPoints.transform.Find("navpoint_Outer_West").gameObject;
@@ -270,7 +291,9 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         print(currNavpoint.gameObject.name
             + " current best goal: "
-            + currentBestGoal.name);
+            + currentBestGoal.name + " with a Rank of " + currentBestGoal);
+
+        */
     }
 
     // Update is called once per frame
