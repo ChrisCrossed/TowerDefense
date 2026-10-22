@@ -34,16 +34,13 @@ public enum PowerCoreRank
 public struct PowerCoreDestination
 {
     public GameObject DestinationObject { private set; get; }
-    public Transform NavPoint { private set; get; }
     public Directions NavPointDirection { private set; get; }
-    public bool IsSpawner { private set; get; }
+    public PowerCoreRank DestinationRank { private set; get; }
 
-    public PowerCoreDestination(GameObject _destinationObject, Transform _navPoint, Directions _navPointDirection, bool _isSpawner )
+    public PowerCoreDestination(Directions _navPointDirection, GameObject _destinationObject, PowerCoreRank _destinationRank)
     {
         DestinationObject = _destinationObject;
-        NavPoint = _navPoint;
         NavPointDirection = _navPointDirection;
-        IsSpawner = _isSpawner;
+        DestinationRank = _destinationRank;
     }
-
 }

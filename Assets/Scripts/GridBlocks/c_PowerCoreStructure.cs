@@ -216,15 +216,51 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
-        List<PowerCoreDestination> tempDestinations = new List<PowerCoreDestination>();
-        if (navpoint_North_Valid)
+        List<GameObject> tempPCStructList = new List<GameObject>();
+        List<float> tempPCStructDistances = new List<float>();
+
+        // Cycles through each of the OTHER PowerCoreStructures and determines if there's a 'PathComplete'
+        // Adds it to the current list if there's a complete path. Otherwise, ignores.
+        foreach(GameObject pcStruct in  LevelLogic.GetPowerCoreStructures())
         {
-            // PowerCoreDestination northDestination = new PowerCoreDestination(null, navpoint_North_Position[0])
+            if(pcStruct != gameObject)
+            {
+                // Starts at this PowerCore's NavAgent and paths to one of the PowerCoreStructure list's NavPoints to determine success.
+                navAgent.CalculatePath(pcStruct.transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position, _path);
+
+                if(_path.status == NavMeshPathStatus.PathComplete)
+                {
+                    tempPCStructList.Add(pcStruct);
+
+                    float tempDist = 0f;
+                    for(int i = 0; i < _path.corners.Length - 1; i++)
+                        tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
+
+                    tempPCStructDistances.Add(tempDist);
+                }
+            }
         }
 
 
 
+        // 1.) Find the distance from the Spawner and each of the remaining PowerCoreStructures >> TO >> the center of this power core.
+        // 2.) Sort by closest to furthest.
+        // 3.) Then, find the shortest distance from each of the NavPoints to each of the objects in #1.
+        // 3a.) When a goal has been found for it's shortest distance, assign it and remove it from the list.
+
+
         /*
+        List<PowerCoreDestination> tempDestinations = new List<PowerCoreDestination>();
+        for(int i = 0; i < 4; i++)
+        {
+            Directions tempDirection = (Directions)i;
+
+            // Get the NavPoint from this direction. If it's valid/exists:
+            // Calculate Path to each Spawner/PowerCore. Store the shortest distance
+        }
+
+
+
 
         print("Spawner Object: " + SpawnerObject.name);
 
