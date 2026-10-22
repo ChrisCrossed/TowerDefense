@@ -202,6 +202,10 @@ public class c_PowerCoreStructure : MonoBehaviour
         // Get a valid NavMeshAgent for a reference point.
         // Navigate to each EnemySpawner until you have PathComplete solution.
         // Snag it and move on.
+        
+        List<GameObject> tempPCStructList = new List<GameObject>();
+        List<float> tempPCStructDistances = new List<float>();
+        List<Vector3[]> tempPCPathCorners = new List<Vector3[]>();
 
         foreach (GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
         {
@@ -212,12 +216,19 @@ public class c_PowerCoreStructure : MonoBehaviour
             if(_path.status == NavMeshPathStatus.PathComplete)
             {
                 SpawnerObject = spawnerObject;
+
+                tempPCStructList.Add(spawnerObject);
+
+                float tempDist = 0f;
+                for(int i = 0; i < _path.corners.Length - 1; i++)
+                    tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
+                
+                tempPCStructDistances.Add(tempDist);
+                tempPCPathCorners.Add(_path.corners);
+
                 break;
             }
         }
-
-        List<GameObject> tempPCStructList = new List<GameObject>();
-        List<float> tempPCStructDistances = new List<float>();
 
         // Cycles through each of the OTHER PowerCoreStructures and determines if there's a 'PathComplete'
         // Adds it to the current list if there's a complete path. Otherwise, ignores.
@@ -237,8 +248,16 @@ public class c_PowerCoreStructure : MonoBehaviour
                         tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
 
                     tempPCStructDistances.Add(tempDist);
+                    tempPCPathCorners.Add(_path.corners);
                 }
             }
+        }
+
+        Debug.DrawLine(tempPCPathCorners[0][0], tempPCPathCorners[0][1], Color.red, 25.0f);
+
+        if(navpoint_North_Valid)
+        {
+
         }
 
 
