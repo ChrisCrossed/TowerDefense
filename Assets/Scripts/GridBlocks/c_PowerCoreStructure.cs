@@ -253,7 +253,15 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
-        Debug.DrawLine(tempPCPathCorners[0][0], tempPCPathCorners[0][1], Color.red, 25.0f);
+        Vector3 v3_CornerDir = tempPCPathCorners[0][1] - tempPCPathCorners[0][0];
+        v3_CornerDir.Normalize();
+
+        if (v3_CornerDir.x < -0.5f) v3_CornerDir = Vector3.left;
+        else if (v3_CornerDir.x > 0.5f) v3_CornerDir = Vector3.right;
+        else if (v3_CornerDir.y > 0.5f) v3_CornerDir = Vector3.forward;
+        else v3_CornerDir = Vector3.back;
+
+        Debug.DrawRay(tempPCPathCorners[0][0], v3_CornerDir * 100f, Color.red, 30f);
 
         if(navpoint_North_Valid)
         {
