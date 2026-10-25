@@ -2,6 +2,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 
 
 
@@ -271,6 +273,72 @@ public class c_PowerCoreStructure : MonoBehaviour
 
                 i = -1;
             }
+        }
+
+        // for(int i = 0; i < tempPCStructList.Count; i++)
+        {
+            // Test
+            int i = 0;
+
+            NavMeshAgent tempAgent = null;
+            NavMeshPath tempPath = new NavMeshPath();
+            
+            if(tempPCStructList[i] == SpawnerObject)
+                tempAgent = tempPCStructList[i].transform.Find("NavMeshAgentObj").transform.GetComponent<NavMeshAgent>();
+            else
+            {
+                Transform navPointsTransform = tempPCStructList[i].transform.Find("NavPoints").transform;
+
+                if (navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().isOnNavMesh)
+                    tempAgent = navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>();
+                else if (navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().isOnNavMesh)
+                    tempAgent = navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>();
+                else if (navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>().isOnNavMesh)
+                    tempAgent = navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>();
+                else if (navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().isOnNavMesh)
+                    tempAgent = navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>();
+                else print("GAME OBJECT HAS NO VALID NavMeshAgent NAV POINTS");
+            }
+
+            print(tempAgent.transform.parent.name);
+
+            float _dist = Mathf.Infinity;
+            int closestCarouselDirection = 100;
+            for (int j = 0; j < CarouselDirections.Length; j++)
+            {
+                tempAgent.CalculatePath(CarouselDirections[j], tempPath);
+
+                float currDist = 0f;
+                for (int k = 0; k < tempPath.corners.Length - 1; k++)
+                {
+                    currDist += Vector3.Distance(tempPath.corners[i], tempPath.corners[i + 1]);
+                }
+
+                if (currDist < _dist)
+                {
+                    closestCarouselDirection = j;
+                    _dist = currDist;
+
+                    j = -1;
+                }
+            }
+
+            print("-----");
+
+            if(tempAgent.transform.parent.gameObject == SpawnerObject)
+            {
+                print(tempAgent.transform.parent.name
+                + ": Closest Dir: " + gameObject.name + ":"
+                + CarouselDirections[closestCarouselDirection]);
+            }
+            else
+            {
+                print(tempAgent.transform.parent.transform.parent.name
+                    + ": Closest Dir: " + gameObject.name + ":"
+                    + CarouselDirections[closestCarouselDirection]);
+            }
+
+            print("-----");
         }
 
         Vector3 v3_CornerDir = tempPCPathCorners[0][1] - tempPCPathCorners[0][0];
