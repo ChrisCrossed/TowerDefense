@@ -253,6 +253,26 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        for(int i = 0; i < tempPCStructList.Count - 1; i++)
+        {
+            if (tempPCStructDistances[i] > tempPCStructDistances[i + 1])
+            {
+                float _dist = tempPCStructDistances[i];
+                GameObject _gameObject = tempPCStructList[i];
+                Vector3[] _corners = tempPCPathCorners[i];
+
+                tempPCStructDistances.RemoveAt(i);
+                tempPCStructList.RemoveAt(i);
+                tempPCPathCorners.RemoveAt(i);
+
+                tempPCStructDistances.Add(_dist);
+                tempPCStructList.Add(_gameObject);
+                tempPCPathCorners.Add(_corners);
+
+                i = -1;
+            }
+        }
+
         Vector3 v3_CornerDir = tempPCPathCorners[0][1] - tempPCPathCorners[0][0];
         v3_CornerDir.Normalize();
 
