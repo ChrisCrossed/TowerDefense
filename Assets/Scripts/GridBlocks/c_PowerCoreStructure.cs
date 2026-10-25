@@ -289,18 +289,47 @@ public class c_PowerCoreStructure : MonoBehaviour
             {
                 Transform navPointsTransform = tempPCStructList[i].transform.Find("NavPoints").transform;
 
-                if (navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().isOnNavMesh)
-                    tempAgent = navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>();
-                else if (navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().isOnNavMesh)
-                    tempAgent = navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>();
-                else if (navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>().isOnNavMesh)
-                    tempAgent = navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>();
-                else if (navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().isOnNavMesh)
-                    tempAgent = navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>();
+                print("West: " + navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().isOnNavMesh);
+                print("East: " + navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().isOnNavMesh);
+                print("North: " + navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().isOnNavMesh);
+                print("South: " + navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>().isOnNavMesh);
+
+                NavMeshAgent westAgent = navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>();
+                NavMeshAgent eastAgent = navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>();
+                NavMeshAgent northAgent = navPointsTransform.Find("navpoint_Outer_North").GetComponent<NavMeshAgent>();
+                NavMeshAgent southAgent = navPointsTransform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>();
+
+                if      (northAgent.isOnNavMesh)
+                    tempAgent = northAgent;
+                else if (westAgent.isOnNavMesh)
+                    tempAgent = westAgent;
+                else if (southAgent.isOnNavMesh)
+                    tempAgent = southAgent;
+                else if (eastAgent.isOnNavMesh)
+                    tempAgent = eastAgent;
                 else print("GAME OBJECT HAS NO VALID NavMeshAgent NAV POINTS");
+
+                /*
+                if      (northAgent.isOnNavMesh && navpoint_North_Valid)
+                    tempAgent = northAgent;
+                else if (westAgent.isOnNavMesh && navpoint_West_Valid)
+                    tempAgent = westAgent;
+                else if (southAgent.isOnNavMesh && navpoint_South_Valid)
+                    tempAgent = southAgent;
+                else if (eastAgent.isOnNavMesh && navpoint_East_Valid)
+                    tempAgent = eastAgent;
+                else print("GAME OBJECT HAS NO VALID NavMeshAgent NAV POINTS");
+                 */
             }
 
-            print(tempAgent.transform.parent.name);
+            if (tempAgent.transform.parent.gameObject == SpawnerObject)
+            {
+                print(tempAgent.transform.parent.name);
+            }
+            else
+            {
+                print(tempAgent.transform.parent.transform.parent.name);
+            }
 
             float _dist = Mathf.Infinity;
             int closestCarouselDirection = 100;
@@ -329,13 +358,13 @@ public class c_PowerCoreStructure : MonoBehaviour
             {
                 print(tempAgent.transform.parent.name
                 + ": Closest Dir: " + gameObject.name + ":"
-                + CarouselDirections[closestCarouselDirection]);
+                + (Directions)closestCarouselDirection);
             }
             else
             {
                 print(tempAgent.transform.parent.transform.parent.name
                     + ": Closest Dir: " + gameObject.name + ":"
-                    + CarouselDirections[closestCarouselDirection]);
+                    + (Directions)closestCarouselDirection);
             }
 
             print("-----");
