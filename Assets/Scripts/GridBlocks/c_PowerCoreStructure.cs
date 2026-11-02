@@ -23,10 +23,13 @@ public class c_PowerCoreStructure : MonoBehaviour
     Vector3[] navpoint_South_Position = new Vector3[2];
 
     Vector3[] CarouselDirections;
+    Vector3[] CardinalDirections;
     List<PowerCoreDestination> PowerCoreDestinations;
 
     GameObject LevelLogicObj;
     c_LevelLogic LevelLogic;
+
+    public Color DevColor;
 
     private void Awake()
     {
@@ -45,6 +48,7 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         DetermineValidWrapPoints();
         SetCarouselDirections();
+        SetCardinalDirections();
         DisableEditorVisualGuides();
     }
 
@@ -167,6 +171,15 @@ public class c_PowerCoreStructure : MonoBehaviour
         CarouselDirections[2] = navpoint_South_Position[1];
         CarouselDirections[3] = navpoint_East_Position[1];
     }
+    void SetCardinalDirections()
+    {
+        CardinalDirections = new Vector3[4];
+
+        CardinalDirections[0] = navpoint_North_Position[0];
+        CardinalDirections[1] = navpoint_West_Position[0];
+        CardinalDirections[2] = navpoint_South_Position[0];
+        CardinalDirections[3] = navpoint_East_Position[0];
+    }
 
     void DisableEditorVisualGuides()
     {
@@ -209,6 +222,8 @@ public class c_PowerCoreStructure : MonoBehaviour
         List<float> tempPCStructDistances = new List<float>();
         List<Vector3[]> tempPCPathCorners = new List<Vector3[]>();
 
+        #region Get the Spawner that is directly connected to this PowerCoreStructure
+
         foreach (GameObject spawnerObject in LevelLogic.GetEnemySpawnerObjects())
         {
             Vector3 spawnerStartPos = spawnerObject.transform.Find("NavMeshAgentObj").transform.position;
@@ -232,9 +247,13 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        #endregion Get the Spawner that is directly connected to this PowerCoreStructure
+
+        #region Get the OTHER PowerCoreStructures that are directly connected to this PowerCoreStructure
+
         // Cycles through each of the OTHER PowerCoreStructures and determines if there's a 'PathComplete'
         // Adds it to the current list if there's a complete path. Otherwise, ignores.
-        foreach(GameObject pcStruct in  LevelLogic.GetPowerCoreStructures())
+        foreach (GameObject pcStruct in  LevelLogic.GetPowerCoreStructures())
         {
             if(pcStruct != gameObject)
             {
@@ -255,7 +274,12 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < tempPCStructList.Count - 1; i++)
+        #endregion Get the OTHER PowerCoreStructures that are directly connected to this PowerCoreStructure
+
+
+        #region Sort by distance
+
+        for (int i = 0; i < tempPCStructList.Count - 1; i++)
         {
             if (tempPCStructDistances[i] > tempPCStructDistances[i + 1])
             {
@@ -275,6 +299,8 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        #endregion Sort by distance
+
         // for(int i = 0; i < tempPCStructList.Count; i++)
         {
             // Test
@@ -288,6 +314,8 @@ public class c_PowerCoreStructure : MonoBehaviour
             else
             {
                 Transform navPointsTransform = tempPCStructList[i].transform.Find("NavPoints").transform;
+
+                print("Running NavPoints Transform test: " + navPointsTransform.parent.name);
 
                 print("West: " + navPointsTransform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().isOnNavMesh);
                 print("East: " + navPointsTransform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().isOnNavMesh);
@@ -308,47 +336,45 @@ public class c_PowerCoreStructure : MonoBehaviour
                 else if (eastAgent.isOnNavMesh)
                     tempAgent = eastAgent;
                 else print("GAME OBJECT HAS NO VALID NavMeshAgent NAV POINTS");
-
-                /*
-                if      (northAgent.isOnNavMesh && navpoint_North_Valid)
-                    tempAgent = northAgent;
-                else if (westAgent.isOnNavMesh && navpoint_West_Valid)
-                    tempAgent = westAgent;
-                else if (southAgent.isOnNavMesh && navpoint_South_Valid)
-                    tempAgent = southAgent;
-                else if (eastAgent.isOnNavMesh && navpoint_East_Valid)
-                    tempAgent = eastAgent;
-                else print("GAME OBJECT HAS NO VALID NavMeshAgent NAV POINTS");
-                 */
             }
 
+
+
+            string tempString = "TempAgent: " + tempAgent.name + " for ";
             if (tempAgent.transform.parent.gameObject == SpawnerObject)
             {
-                print(tempAgent.transform.parent.name);
+                tempString += tempAgent.transform.parent.name;
             }
             else
             {
-                print(tempAgent.transform.parent.transform.parent.name);
+                tempString += tempAgent.transform.parent.transform.parent.name;
             }
+            print(tempString + " being tested");
+
+
 
             float _dist = Mathf.Infinity;
-            int closestCarouselDirection = 100;
-            for (int j = 0; j < CarouselDirections.Length; j++)
+            int closestCardinalDirection = 100;
+            for (int j = 0; j < CardinalDirections.Length; j++)
             {
-                tempAgent.CalculatePath(CarouselDirections[j], tempPath);
-
-                float currDist = 0f;
-                for (int k = 0; k < tempPath.corners.Length - 1; k++)
+                if (CardinalDirections[j] != new Vector3())
                 {
-                    currDist += Vector3.Distance(tempPath.corners[i], tempPath.corners[i + 1]);
-                }
+                    print("J: " + j + ", " + CardinalDirections[j].ToString());
+                    tempAgent.CalculatePath(CardinalDirections[j], tempPath);
 
-                if (currDist < _dist)
-                {
-                    closestCarouselDirection = j;
-                    _dist = currDist;
+                    float currDist = 0f;
+                    for (int k = 0; k < tempPath.corners.Length - 1; k++)
+                    {
+                        currDist += Vector3.Distance(tempPath.corners[i], tempPath.corners[i + 1]);
+                    }
 
-                    j = -1;
+                    if (currDist < _dist)
+                    {
+                        closestCardinalDirection = j;
+                        _dist = currDist;
+
+                        if(j != 0) j = -1;
+                    }
                 }
             }
 
@@ -358,16 +384,17 @@ public class c_PowerCoreStructure : MonoBehaviour
             {
                 print(tempAgent.transform.parent.name
                 + ": Closest Dir: " + gameObject.name + ":"
-                + (Directions)closestCarouselDirection);
+                + (Directions)closestCardinalDirection);
             }
             else
             {
                 print(tempAgent.transform.parent.transform.parent.name
                     + ": Closest Dir: " + gameObject.name + ":"
-                    + (Directions)closestCarouselDirection);
+                    + (Directions)closestCardinalDirection);
             }
 
             print("-----");
+            Debug.DrawRay(gameObject.transform.position + (Vector3.up * 10f), CardinalDirections[closestCardinalDirection], DevColor, 30f);
         }
 
         Vector3 v3_CornerDir = tempPCPathCorners[0][1] - tempPCPathCorners[0][0];
@@ -378,7 +405,7 @@ public class c_PowerCoreStructure : MonoBehaviour
         else if (v3_CornerDir.y > 0.5f) v3_CornerDir = Vector3.forward;
         else v3_CornerDir = Vector3.back;
 
-        Debug.DrawRay(tempPCPathCorners[0][0], v3_CornerDir * 100f, Color.red, 30f);
+        // Debug.DrawRay(tempPCPathCorners[0][0], v3_CornerDir * 100f, Color.red, 30f);
 
         if(navpoint_North_Valid)
         {
