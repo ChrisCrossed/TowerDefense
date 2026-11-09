@@ -202,6 +202,10 @@ public class c_PowerCoreStructure : MonoBehaviour
 
     void RunPowerCorePointInitialPathing()
     {
+        if(DebugThis) print("PowerCorePathing: " + gameObject.name);
+
+        print("<color=red>---</color>");
+
         if(ValidNavPointObject == null)
         {
             print("<color=red>POWER CORE STRUCTURE HAS NO VALID NAVPOINT OBJECTS - </color>" + gameObject.name);
@@ -247,21 +251,61 @@ public class c_PowerCoreStructure : MonoBehaviour
             }
         }
 
+        if (DebugThis) print("Spawner: " + tempPCPathCorners.Count);
+
         #endregion Get the Spawner that is directly connected to this PowerCoreStructure
 
         #region Get the OTHER PowerCoreStructures that are directly connected to this PowerCoreStructure
 
         // Cycles through each of the OTHER PowerCoreStructures and determines if there's a 'PathComplete'
         // Adds it to the current list if there's a complete path. Otherwise, ignores.
-        foreach (GameObject pcStruct in  LevelLogic.GetPowerCoreStructures())
+        foreach (GameObject pcStruct in LevelLogic.GetPowerCoreStructures())
         {
+            if(DebugThis) print("Testing: " + pcStruct.name);
             if(pcStruct != gameObject)
             {
                 // Starts at this PowerCore's NavAgent and paths to one of the PowerCoreStructure list's NavPoints to determine success.
-                navAgent.CalculatePath(pcStruct.transform.Find("NavPoints").transform.Find("navpoint_SouthEast").transform.position, _path);
+                Vector3 pcCheckPos;
 
-                if(_path.status == NavMeshPathStatus.PathComplete)
+                if (pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_West").GetComponent<NavMeshAgent>().isOnNavMesh)
                 {
+                    pcCheckPos = pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_West").transform.position;
+                    if (DebugThis) print("(Cont): " + "West");
+                }
+                else if (pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_South").GetComponent<NavMeshAgent>().isOnNavMesh)
+                {
+                    pcCheckPos = pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_South").transform.position;
+                    if (DebugThis) print("(Cont): " + "South");
+                }
+                else if (pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_East").GetComponent<NavMeshAgent>().isOnNavMesh)
+                {
+                    pcCheckPos = pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_East").transform.position;
+                    if (DebugThis) print("(Cont): " + "East");
+                }
+                else
+                {
+                    pcCheckPos = pcStruct.transform.Find("NavPoints").transform.Find("navpoint_Outer_North").transform.position;
+                    if (DebugThis) print("(Cont): " + "North");
+                }
+
+                navAgent.CalculatePath(pcCheckPos, _path);
+
+                if(DebugThis)
+                {
+                    for (int i = 0; i < _path.corners.Length - 1; i++)
+                    {
+                        Color testColor = Color.red;
+                        if(i == 0) testColor = Color.green;
+
+                        Debug.DrawLine(_path.corners[i] + Vector3.up * 5, _path.corners[i + 1] + Vector3.up * 5, testColor, 30);
+                    }
+                }
+                
+
+                if (_path.status == NavMeshPathStatus.PathComplete)
+                {
+                    if (DebugThis) print("Adding: " + pcStruct.name);
+
                     tempPCStructList.Add(pcStruct);
 
                     float tempDist = 0f;
@@ -270,6 +314,8 @@ public class c_PowerCoreStructure : MonoBehaviour
 
                     tempPCStructDistances.Add(tempDist);
                     tempPCPathCorners.Add(_path.corners);
+
+                    if (DebugThis) print("Added: " + tempPCPathCorners.Count);
                 }
             }
         }
@@ -300,6 +346,12 @@ public class c_PowerCoreStructure : MonoBehaviour
         }
 
         #endregion Sort by distance
+
+        if (DebugThis) print("Count: " + tempPCPathCorners.Count);
+
+        /*
+
+        GameObject testSphere = GameObject.Find("TestSphere").gameObject;
 
         // for(int i = 0; i < tempPCStructList.Count; i++)
         {
@@ -412,95 +464,95 @@ public class c_PowerCoreStructure : MonoBehaviour
 
         }
 
-
-
-        // 1.) Find the distance from the Spawner and each of the remaining PowerCoreStructures >> TO >> the center of this power core.
-        // 2.) Sort by closest to furthest.
-        // 3.) Then, find the shortest distance from each of the NavPoints to each of the objects in #1.
-        // 3a.) When a goal has been found for it's shortest distance, assign it and remove it from the list.
-
-
-        /*
-        List<PowerCoreDestination> tempDestinations = new List<PowerCoreDestination>();
-        for(int i = 0; i < 4; i++)
-        {
-            Directions tempDirection = (Directions)i;
-
-            // Get the NavPoint from this direction. If it's valid/exists:
-            // Calculate Path to each Spawner/PowerCore. Store the shortest distance
-        }
-
-
-
-
-        print("Spawner Object: " + SpawnerObject.name);
-
-        if(DebugThis) print("Power Core Struct "
-            + gameObject.name + " is connected to "
-            +  SpawnerObject.name);
-
-        // print(_path.corners.Length);
-
-        // If SoloCore, give default roundabout instructions.
-        if (powerCoreRank == PowerCoreRank.SoloCore || powerCoreRank == PowerCoreRank.Primary)
-        {
-            PowerCoreDestination tempDest = new PowerCoreDestination(SpawnerObject, ValidNavPointObject.transform, true);
-
-            PowerCoreDestinations.Add(tempDest);
-
-            if(powerCoreRank == PowerCoreRank.SoloCore) return;
-        }
-
-        // Starting with the West navpoint, scan through which destination is viable.
-        // 1.) Scan the StartPoint as the initial direct goal, and store the distance/object.
-        // 2.) If this PowerCore is 'SoloCore', we're done. Return out.
-        // 3.) Otherwise, we loop through other possible PowerCore structures. Store their distances.
-        // 4.) I want to store the closest destination for each given entrance.
-        //    4.a) As long as all cores/startpoints are given at least one path exit, it's fine for the remaining exits to share a common exit goal.
-
-        // Primary / SoloCore are the only ones that can connect to Spawner.
-        // Secondary / Tertiary can only connect to Primary.
-
-        float currDist = Mathf.Infinity;
-        GameObject currNavpoint = navPoints.transform.Find("navpoint_Outer_West").gameObject;
-        navAgent = currNavpoint.GetComponent<NavMeshAgent>();
-        GameObject currentBestGoal = null;
-
-        if (navpoint_West_Valid)
-        {
-            print("West Valid");
-            float tempDist = 0f;
-
-            Vector3 destinationPos = SpawnerObject.transform.Find("NavMeshAgentObj").gameObject.transform.position;
-
-            print("<color=red>-----</color>");
-            print("Spawner: " + SpawnerObject.name);
-            print("Pos: " + destinationPos);
-            print("NavAgent: " + navAgent.gameObject.name);
-
-            navAgent.CalculatePath(destinationPos, _path);
-
-            print("Status: " + _path.status);
-            print("Obj: " + gameObject.transform.name + ": " +  navAgent.path.corners.Length);
-            print(_path.corners.Length);
-
-            for(int i = 0; i < _path.corners.Length - 1; i++)
-                tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
-
-            print(tempDist);
-
-            if (tempDist < currDist)
-            {
-                currDist = tempDist;
-                currentBestGoal = SpawnerObject; // SpawnerObject gets replaced with whatever potential connections exist
-            }
-        }
-
-        print(currNavpoint.gameObject.name
-            + " current best goal: "
-            + currentBestGoal.name + " with a Rank of " + currentBestGoal);
-
         */
+
+            // 1.) Find the distance from the Spawner and each of the remaining PowerCoreStructures >> TO >> the center of this power core.
+            // 2.) Sort by closest to furthest.
+            // 3.) Then, find the shortest distance from each of the NavPoints to each of the objects in #1.
+            // 3a.) When a goal has been found for it's shortest distance, assign it and remove it from the list.
+
+
+            /*
+            List<PowerCoreDestination> tempDestinations = new List<PowerCoreDestination>();
+            for(int i = 0; i < 4; i++)
+            {
+                Directions tempDirection = (Directions)i;
+
+                // Get the NavPoint from this direction. If it's valid/exists:
+                // Calculate Path to each Spawner/PowerCore. Store the shortest distance
+            }
+
+
+
+
+            print("Spawner Object: " + SpawnerObject.name);
+
+            if(DebugThis) print("Power Core Struct "
+                + gameObject.name + " is connected to "
+                +  SpawnerObject.name);
+
+            // print(_path.corners.Length);
+
+            // If SoloCore, give default roundabout instructions.
+            if (powerCoreRank == PowerCoreRank.SoloCore || powerCoreRank == PowerCoreRank.Primary)
+            {
+                PowerCoreDestination tempDest = new PowerCoreDestination(SpawnerObject, ValidNavPointObject.transform, true);
+
+                PowerCoreDestinations.Add(tempDest);
+
+                if(powerCoreRank == PowerCoreRank.SoloCore) return;
+            }
+
+            // Starting with the West navpoint, scan through which destination is viable.
+            // 1.) Scan the StartPoint as the initial direct goal, and store the distance/object.
+            // 2.) If this PowerCore is 'SoloCore', we're done. Return out.
+            // 3.) Otherwise, we loop through other possible PowerCore structures. Store their distances.
+            // 4.) I want to store the closest destination for each given entrance.
+            //    4.a) As long as all cores/startpoints are given at least one path exit, it's fine for the remaining exits to share a common exit goal.
+
+            // Primary / SoloCore are the only ones that can connect to Spawner.
+            // Secondary / Tertiary can only connect to Primary.
+
+            float currDist = Mathf.Infinity;
+            GameObject currNavpoint = navPoints.transform.Find("navpoint_Outer_West").gameObject;
+            navAgent = currNavpoint.GetComponent<NavMeshAgent>();
+            GameObject currentBestGoal = null;
+
+            if (navpoint_West_Valid)
+            {
+                print("West Valid");
+                float tempDist = 0f;
+
+                Vector3 destinationPos = SpawnerObject.transform.Find("NavMeshAgentObj").gameObject.transform.position;
+
+                print("<color=red>-----</color>");
+                print("Spawner: " + SpawnerObject.name);
+                print("Pos: " + destinationPos);
+                print("NavAgent: " + navAgent.gameObject.name);
+
+                navAgent.CalculatePath(destinationPos, _path);
+
+                print("Status: " + _path.status);
+                print("Obj: " + gameObject.transform.name + ": " +  navAgent.path.corners.Length);
+                print(_path.corners.Length);
+
+                for(int i = 0; i < _path.corners.Length - 1; i++)
+                    tempDist += Vector3.Distance(_path.corners[i], _path.corners[i + 1]);
+
+                print(tempDist);
+
+                if (tempDist < currDist)
+                {
+                    currDist = tempDist;
+                    currentBestGoal = SpawnerObject; // SpawnerObject gets replaced with whatever potential connections exist
+                }
+            }
+
+            print(currNavpoint.gameObject.name
+                + " current best goal: "
+                + currentBestGoal.name + " with a Rank of " + currentBestGoal);
+
+            */
     }
 
     // Update is called once per frame

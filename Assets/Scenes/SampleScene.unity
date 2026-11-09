@@ -4329,7 +4329,7 @@ GameObject:
   - component: {fileID: 1331428400}
   - component: {fileID: 1331428399}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: TestSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4798,7 +4798,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6147883684078909157, guid: 47261504bde00b849a3b93c6e43913ef, type: 3}
       propertyPath: DebugThis
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6147883684078909157, guid: 47261504bde00b849a3b93c6e43913ef, type: 3}
       propertyPath: DevColor.b
@@ -7282,8 +7282,8 @@ SceneRoots:
   - {fileID: 1896997364}
   - {fileID: 875883412534576073}
   - {fileID: 1543361899}
-  - {fileID: 231046558}
   - {fileID: 1401417997}
-  - {fileID: 1801177794}
+  - {fileID: 231046558}
   - {fileID: 1856040445}
+  - {fileID: 1801177794}
   - {fileID: 1331428402}
